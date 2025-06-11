@@ -296,11 +296,6 @@
         </div>
     </div>
 
-    <!-- 正解音源ファイル -->
-    <audio id="correct-sound" preload="auto">
-        <source src="https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/21530700/65fc6b76-8b6b-42a4-b873-3b80ee86d1ac/Quiz-Ding_Dong05-1-Fast-Short.mp3" type="audio/mpeg">
-    </audio>
-
     <script>
         // 音声出力対応の400問英単語データベース
         const gameData = {
@@ -653,12 +648,12 @@
                 {word: "relaxed", meaning: "リラックス", emoji: "😎", explanation: "のんびりした気持ちだね！"},
                 {word: "disappointed", meaning: "がっかり", emoji: "😞", explanation: "期待外れの気持ちだよ！"},
                 {word: "hopeful", meaning: "きぼう", emoji: "🤗", explanation: "希望に満ちた気持ちだね！"},
-                            {word: "amazed", meaning: "かんどう", emoji: "😍", explanation: "感動した気持ちだよ！"}
+                {word: "amazed", meaning: "かんどう", emoji: "😍", explanation: "感動した気持ちだよ！"}
             ],
             time: [
                 {word: "morning", meaning: "あさ", emoji: "🌅", explanation: "一日の始まりの時間だよ！"},
                 {word: "afternoon", meaning: "ごご", emoji: "☀️", explanation: "お昼から夕方までの時間だね！"},
-                {word: "evening", meaning: "ゆうがた", emoji: "🌆", explanation: "夕方の時間だよ！"},
+                                {word: "evening", meaning: "ゆうがた", emoji: "🌆", explanation: "夕方の時間だよ！"},
                 {word: "night", meaning: "よる", emoji: "🌙", explanation: "暗くなった時間だよ！"},
                 {word: "today", meaning: "きょう", emoji: "📅", explanation: "今日という日だね！"},
                 {word: "tomorrow", meaning: "あした", emoji: "🌅", explanation: "次の日のことだよ！"},
@@ -736,98 +731,78 @@
         let questionStartTime;
         let correctAnswers = 0;
         let currentQuestions = [];
+        let audioContext = null;
 
-        // 超大音量対応の音声再生機能[1]
+        // クイズ正解効果音「ピンポーン」[1][3]
         function playCorrectSound() {
             try {
-                // アップロードされた音源ファイルを使用[1]
-                const correctAudio = document.getElementById('correct-sound');
-                correctAudio.volume = 1.0; // 最大音量に設定
-                correctAudio.currentTime = 0;
-                
-                correctAudio.play().then(() => {
-                    console.log('正解音源を再生しました（音量最大）');
-                }).catch(error => {
-                    console.log('正解音源の再生に失敗、フォールバックを使用:', error);
-                    playCorrectSoundFallback();
-                });
-            } catch (error) {
-                console.log('正解音源の再生に失敗、フォールバックを使用:', error);
-                playCorrectSoundFallback();
-            }
-        }
-
-        // 超大音量フォールバック音
-        function playCorrectSoundFallback() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // 複数のオシレーターで音量を増幅
-                for (let i = 0; i < 3; i++) {
-                    // 「ピン」音（高音）
-                    const oscillator1 = audioContext.createOscillator();
-                    const gainNode1 = audioContext.createGain();
-                    oscillator1.connect(gainNode1);
-                    gainNode1.connect(audioContext.destination);
-                    
-                    oscillator1.frequency.setValueAtTime(1400 + (i * 100), audioContext.currentTime);
-                    oscillator1.type = 'sine';
-                    gainNode1.gain.setValueAtTime(1.0, audioContext.currentTime); // 最大音量
-                    gainNode1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-                    
-                    oscillator1.start(audioContext.currentTime);
-                    oscillator1.stop(audioContext.currentTime + 0.4);
-                    
-                    // 「ポーン」音（中音）- 少し遅れて
-                    setTimeout(() => {
-                        const oscillator2 = audioContext.createOscillator();
-                        const gainNode2 = audioContext.createGain();
-                        oscillator2.connect(gainNode2);
-                        gainNode2.connect(audioContext.destination);
-                        
-                        oscillator2.frequency.setValueAtTime(900 + (i * 50), audioContext.currentTime);
-                        oscillator2.type = 'sine';
-                        gainNode2.gain.setValueAtTime(1.0, audioContext.currentTime); // 最大音量
-                        gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
-                        
-                        oscillator2.start(audioContext.currentTime);
-                        oscillator2.stop(audioContext.currentTime + 0.6);
-                    }, 200);
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 }
                 
-                console.log('フォールバック正解音を再生しました（超大音量）');
+                // 「ピン」音（高音）- 音量を英単語より小さく設定
+                const oscillator1 = audioContext.createOscillator();
+                const gainNode1 = audioContext.createGain();
+                oscillator1.connect(gainNode1);
+                gainNode1.connect(audioContext.destination);
+                
+                oscillator1.frequency.setValueAtTime(1760, audioContext.currentTime); // 高いA音
+                oscillator1.type = 'sine';
+                gainNode1.gain.setValueAtTime(0.3, audioContext.currentTime); // 英単語より小さい音量
+                gainNode1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator1.start(audioContext.currentTime);
+                oscillator1.stop(audioContext.currentTime + 0.3);
+                
+                // 「ポーン」音（中音）- 少し遅れて
+                setTimeout(() => {
+                    const oscillator2 = audioContext.createOscillator();
+                    const gainNode2 = audioContext.createGain();
+                    oscillator2.connect(gainNode2);
+                    gainNode2.connect(audioContext.destination);
+                    
+                    oscillator2.frequency.setValueAtTime(1320, audioContext.currentTime); // E音
+                    oscillator2.type = 'sine';
+                    gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime); // 英単語より小さい音量
+                    gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    
+                    oscillator2.start(audioContext.currentTime);
+                    oscillator2.stop(audioContext.currentTime + 0.5);
+                }, 200);
+                
+                console.log('正解音「ピンポーン」を再生しました（音量調整済み）');
             } catch (error) {
-                console.log('フォールバック正解音の再生に失敗しました:', error);
+                console.log('正解音の再生に失敗しました:', error);
             }
         }
 
         function playWrongSound() {
             try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // 複数のオシレーターで「ブブー」音を増幅
-                for (let i = 0; i < 2; i++) {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                    
-                    oscillator.frequency.setValueAtTime(180 + (i * 30), audioContext.currentTime);
-                    oscillator.type = 'sawtooth';
-                    gainNode.gain.setValueAtTime(1.0, audioContext.currentTime); // 最大音量
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
-                    
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 1.5);
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 }
                 
-                console.log('不正解音を再生しました（超大音量）');
+                // 「ブブー」音（低音）- 音量を英単語より小さく設定
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // 低いA音
+                oscillator.type = 'sawtooth';
+                gainNode.gain.setValueAtTime(0.25, audioContext.currentTime); // 英単語より小さい音量
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 1.2);
+                
+                console.log('不正解音「ブブー」を再生しました（音量調整済み）');
             } catch (error) {
                 console.log('不正解音の再生に失敗しました:', error);
             }
         }
 
-        // 音声読み上げ機能（音量最大）[7][8][9][10][11]
+        // 音声読み上げ機能（英単語は大きな音量）[4]
         function speakWord(word) {
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(word);
@@ -835,7 +810,7 @@
                 utterance.lang = 'en-US';
                 utterance.rate = 0.8;
                 utterance.pitch = 1;
-                utterance.volume = 1.0; // 最大音量
+                utterance.volume = 1.0; // 英単語は最大音量
 
                 const voices = speechSynthesis.getVoices();
                 const englishVoice = voices.find(voice => 
@@ -847,7 +822,7 @@
                 }
                 
                 speechSynthesis.speak(utterance);
-                console.log('英単語を読み上げました（音量最大）:', word);
+                console.log('英単語を読み上げました（最大音量）:', word);
             } else {
                 console.log('音声合成はサポートされていません');
             }
@@ -884,6 +859,14 @@
         }
 
         function startGame() {
+            // AudioContextを初期化[3]
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
             timeLimit = parseInt(document.getElementById('time-input').value);
             timeLeft = timeLimit;
             
@@ -1093,20 +1076,17 @@
             console.log('利用可能な音声:', voices.filter(voice => voice.lang.includes('en')));
         };
 
-        // ユーザーインタラクション後にAudioContextを有効化
+        // ユーザーインタラクション後にAudioContextを有効化[4]
         document.addEventListener('click', function() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
             if (audioContext.state === 'suspended') {
                 audioContext.resume();
+                console.log('AudioContextが有効化されました');
             }
         }, { once: true });
-
-        // 音源ファイルの事前読み込み
-        window.addEventListener('load', function() {
-            const correctAudio = document.getElementById('correct-sound');
-            correctAudio.load();
-            console.log('正解音源ファイルを読み込みました');
-        });
     </script>
 </body>
 </html>
+
