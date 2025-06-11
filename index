@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASHIZAWAのKABE - 音声学習版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .title {
+            color: #ff6b6b;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #4ecdc4;
+        }
+
+        .word-image {
+            width: 300px;
+            height: 200px;
+            border-radius: 15px;
+            margin: 20px auto;
+            background: #f8f9fa;
+            border: 3px solid #ffd93d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+        }
+
+        .word-text {
+            font-size: 2.5em;
+            color: #ff6b6b;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .speak-btn {
+            background: linear-gradient(45deg, #9c27b0, #e91e63);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.3em;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .speak-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .option-btn {
+            padding: 15px 20px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .correct {
+            background: linear-gradient(45deg, #56ab2f, #a8e6cf) !important;
+            animation: bounce 0.6s ease;
+        }
+
+        .wrong {
+            background: linear-gradient(45deg, #ff6b6b, #ffa8a8) !important;
+            animation: shake 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            80% { transform: translateY(-5px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .explanation {
+            background: #fff3cd;
+            border: 2px solid #ffd93d;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            color: #856404;
+            display: none;
+        }
+
+        .timer-setup, .level-complete {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .timer-input {
+            font-size: 1.5em;
+            padding: 10px;
+            border: 2px solid #4ecdc4;
+            border-radius: 10px;
+            margin: 10px;
+        }
+
+        .start-btn, .next-level-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ffa8a8);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            transition: width 0.3s ease;
+        }
+
+        .rank-display {
+            font-size: 2em;
+            color: #ff6b6b;
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 15px;
+            border: 3px solid #ffd93d;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .category-selector {
+            margin: 20px 0;
+        }
+
+        .category-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        .category-btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #ffa8a8);
+        }
+
+        .image-hidden {
+            background: #f0f0f0 !important;
+            border: 3px dashed #ccc !important;
+            color: #999;
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="title">🌟 ASHIZAWAのKABE - 音声学習版 🌟</h1>
+        
+        <div id="timer-setup" class="timer-setup">
+            <h2>チャレンジタイムを設定してね！</h2>
+            <input type="number" id="time-input" class="timer-input" value="30" min="10" max="120">
+            <span>秒</span>
+            
+            <div class="category-selector">
+                <h3>カテゴリを選んでね！</h3>
+                <button class="category-btn active" onclick="selectCategory('all')">全カテゴリ</button>
+                <button class="category-btn" onclick="selectCategory('basic')">基本単語</button>
+                <button class="category-btn" onclick="selectCategory('animals')">動物</button>
+                <button class="category-btn" onclick="selectCategory('food')">食べ物</button>
+                <button class="category-btn" onclick="selectCategory('nature')">自然</button>
+                <button class="category-btn" onclick="selectCategory('school')">学校</button>
+                <button class="category-btn" onclick="selectCategory('family')">家族</button>
+                <button class="category-btn" onclick="selectCategory('colors')">色</button>
+                <button class="category-btn" onclick="selectCategory('body')">体</button>
+                <button class="category-btn" onclick="selectCategory('sports')">スポーツ</button>
+                <button class="category-btn" onclick="selectCategory('weather')">天気</button>
+                <button class="category-btn" onclick="selectCategory('actions')">動作</button>
+                <button class="category-btn" onclick="selectCategory('objects')">物</button>
+                <button class="category-btn" onclick="selectCategory('emotions')">感情</button>
+                <button class="category-btn" onclick="selectCategory('time')">時間</button>
+                <button class="category-btn" onclick="selectCategory('numbers')">数字</button>
+            </div>
+            
+            <br>
+            <button onclick="startGame()" class="start-btn">ゲームスタート！</button>
+        </div>
+
+        <div id="game-area" class="hidden">
+            <div class="game-info">
+                <div>レベル: <span id="level">1</span></div>
+                <div>問題: <span id="question-num">1</span>/10</div>
+                <div>ポイント: <span id="points">0</span></div>
+                <div>残り時間: <span id="timer">30</span>秒</div>
+            </div>
+
+            <div class="progress-bar">
+                <div id="progress" class="progress-fill" style="width: 10%"></div>
+            </div>
+
+            <div id="word-image" class="word-image image-hidden">❓</div>
+            <div id="word-text" class="word-text">apple</div>
+            <button id="speak-btn" class="speak-btn" onclick="speakCurrentWord()">
+                🔊 音声で聞く
+            </button>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(0)">りんご</button>
+                <button class="option-btn" onclick="selectAnswer(1)">みかん</button>
+                <button class="option-btn" onclick="selectAnswer(2)">ばなな</button>
+                <button class="option-btn" onclick="selectAnswer(3)">ぶどう</button>
+            </div>
+
+            <div id="explanation" class="explanation"></div>
+        </div>
+
+        <div id="level-complete" class="level-complete hidden">
+            <h2>🎉 レベルクリア！ 🎉</h2>
+            <p>ボーナスポイント: <span id="bonus-points">1000</span>点</p>
+            <button onclick="nextLevel()" class="next-level-btn">次のレベルへ</button>
+        </div>
+
+        <div id="game-over" class="hidden">
+            <h2>ゲーム終了！</h2>
+            <div id="final-rank" class="rank-display"></div>
+            <button onclick="restartGame()" class="start-btn">もう一度プレイ</button>
+        </div>
+    </div>
+
+    <script>
+        // 音声出力対応の400問英単語データベース
+        const gameData = {
+            basic: [
+                {word: "apple", meaning: "りんご", emoji: "🍎", explanation: "赤くて甘い果物だよ！"},
+                {word: "book", meaning: "ほん", emoji: "📚", explanation: "たくさんのことを学べるよ！"},
+                {word: "car", meaning: "くるま", emoji: "🚗", explanation: "速く移動できる乗り物だね！"},
+                {word: "door", meaning: "ドア", emoji: "🚪", explanation: "部屋に入るときに開けるよ！"},
+                {word: "egg", meaning: "たまご", emoji: "🥚", explanation: "鶏が産む栄養たっぷりの食べ物！"},
+                {word: "fire", meaning: "ひ", emoji: "🔥", explanation: "熱くて明るい炎だよ！"},
+                {word: "glass", meaning: "コップ", emoji: "🥛", explanation: "水を飲むときに使うよ！"},
+                {word: "house", meaning: "いえ", emoji: "🏠", explanation: "みんなが住む場所だよ！"},
+                {word: "ice", meaning: "こおり", emoji: "🧊", explanation: "水が凍ったものだね！"},
+                {word: "juice", meaning: "ジュース", emoji: "🧃", explanation: "果物から作る甘い飲み物！"},
+                {word: "key", meaning: "かぎ", emoji: "🔑", explanation: "ドアを開けるのに使うよ！"},
+                {word: "lamp", meaning: "ランプ", emoji: "💡", explanation: "暗いところを明るくするよ！"},
+                {word: "moon", meaning: "つき", emoji: "🌙", explanation: "夜空に浮かぶ美しい光！"},
+                {word: "nose", meaning: "はな", emoji: "👃", explanation: "においを感じる体の部分！"},
+                {word: "orange", meaning: "オレンジ", emoji: "🍊", explanation: "酸っぱくて甘い果物だよ！"},
+                {word: "pen", meaning: "ペン", emoji: "✏️", explanation: "文字を書くときに使うよ！"},
+                {word: "queen", meaning: "じょおう", emoji: "👸", explanation: "国を治める女性の王様！"},
+                {word: "rain", meaning: "あめ", emoji: "🌧️", explanation: "空から降ってくる水だよ！"},
+                {word: "sun", meaning: "たいよう", emoji: "☀️", explanation: "明るく暖かい光をくれるよ！"},
+                {word: "tree", meaning: "き", emoji: "🌳", explanation: "酸素を作ってくれるよ！"},
+                {word: "water", meaning: "みず", emoji: "💧", explanation: "生きるために必要だよ！"},
+                {word: "box", meaning: "はこ", emoji: "📦", explanation: "物を入れる四角い容器！"},
+                {word: "chair", meaning: "いす", emoji: "🪑", explanation: "座るときに使う家具！"},
+                {word: "table", meaning: "テーブル", emoji: "🪑", explanation: "物を置く平らな家具！"},
+                {word: "window", meaning: "まど", emoji: "🪟", explanation: "外を見るための開口部！"}
+            ],
+            animals: [
+                {word: "cat", meaning: "ねこ", emoji: "🐱", explanation: "かわいい動物だね！"},
+                {word: "dog", meaning: "いぬ", emoji: "🐶", explanation: "人間の一番の友達だよ！"},
+                {word: "bird", meaning: "とり", emoji: "🐦", explanation: "空を飛ぶ動物だよ！"},
+                {word: "fish", meaning: "さかな", emoji: "🐟", explanation: "水の中で泳ぐ動物！"},
+                {word: "rabbit", meaning: "うさぎ", emoji: "🐰", explanation: "長い耳がかわいい動物！"},
+                {word: "elephant", meaning: "ぞう", emoji: "🐘", explanation: "長い鼻を持つ大きな動物！"},
+                {word: "lion", meaning: "ライオン", emoji: "🦁", explanation: "動物の王様だよ！"},
+                {word: "tiger", meaning: "とら", emoji: "🐅", explanation: "しま模様がかっこいい動物！"},
+                {word: "bear", meaning: "くま", emoji: "🐻", explanation: "大きくて強い動物だよ！"},
+                {word: "monkey", meaning: "さる", emoji: "🐒", explanation: "木登りが得意な動物！"},
+                {word: "horse", meaning: "うま", emoji: "🐴", explanation: "速く走る美しい動物！"},
+                {word: "cow", meaning: "うし", emoji: "🐄", explanation: "牛乳をくれる動物だよ！"},
+                {word: "pig", meaning: "ぶた", emoji: "🐷", explanation: "ピンク色のかわいい動物！"},
+                {word: "sheep", meaning: "ひつじ", emoji: "🐑", explanation: "ふわふわの毛がある動物！"},
+                {word: "duck", meaning: "あひる", emoji: "🦆", explanation: "水辺で泳ぐ鳥だよ！"},
+                {word: "frog", meaning: "かえる", emoji: "🐸", explanation: "池にいる緑色の動物！"},
+                {word: "butterfly", meaning: "ちょうちょ", emoji: "🦋", explanation: "きれいな羽で飛ぶよ！"},
+                {word: "bee", meaning: "はち", emoji: "🐝", explanation: "はちみつを作る働き者！"},
+                {word: "spider", meaning: "くも", emoji: "🕷️", explanation: "巣を作る小さな動物！"},
+                {word: "snake", meaning: "へび", emoji: "🐍", explanation: "長い体でくねくね動く動物！"},
+                {word: "mouse", meaning: "ねずみ", emoji: "🐭", explanation: "小さくて素早い動物！"},
+                {word: "wolf", meaning: "おおかみ", emoji: "🐺", explanation: "群れで行動する野生動物！"},
+                {word: "fox", meaning: "きつね", emoji: "🦊", explanation: "賢くて美しい動物！"},
+                {word: "deer", meaning: "しか", emoji: "🦌", explanation: "角がある森の動物！"},
+                {word: "giraffe", meaning: "きりん", emoji: "🦒", explanation: "首がとても長い動物！"}
+            ],
+            food: [
+                {word: "bread", meaning: "パン", emoji: "🍞", explanation: "朝ごはんによく食べるよ！"},
+                {word: "rice", meaning: "ごはん", emoji: "🍚", explanation: "日本人の主食だね！"},
+                {word: "milk", meaning: "ぎゅうにゅう", emoji: "🥛", explanation: "体を大きくしてくれるよ！"},
+                {word: "cheese", meaning: "チーズ", emoji: "🧀", explanation: "牛乳から作る美味しい食べ物！"},
+                {word: "meat", meaning: "にく", emoji: "🥩", explanation: "力をつけてくれる食べ物！"},
+                {word: "pizza", meaning: "ピザ", emoji: "🍕", explanation: "みんなで分けて食べる美味しい料理！"},
+                {word: "cake", meaning: "ケーキ", emoji: "🍰", explanation: "お誕生日に食べる甘いお菓子！"},
+                {word: "cookie", meaning: "クッキー", emoji: "🍪", explanation: "サクサクした甘いお菓子！"},
+                {word: "banana", meaning: "バナナ", emoji: "🍌", explanation: "黄色くて甘い果物だよ！"},
+                {word: "grape", meaning: "ぶどう", emoji: "🍇", explanation: "小さくて甘い紫の果物！"},
+                {word: "strawberry", meaning: "いちご", emoji: "🍓", explanation: "赤くて甘酸っぱい果物！"},
+                {word: "watermelon", meaning: "すいか", emoji: "🍉", explanation: "夏に食べる大きな果物！"},
+                {word: "tomato", meaning: "トマト", emoji: "🍅", explanation: "赤くて栄養たっぷりの野菜！"},
+                {word: "carrot", meaning: "にんじん", emoji: "🥕", explanation: "オレンジ色の栄養のある野菜！"},
+                {word: "potato", meaning: "じゃがいも", emoji: "🥔", explanation: "いろんな料理に使える野菜！"},
+                {word: "corn", meaning: "とうもろこし", emoji: "🌽", explanation: "黄色い粒がたくさんある野菜！"},
+                {word: "salad", meaning: "サラダ", emoji: "🥗", explanation: "野菜をたくさん食べられる料理！"},
+                {word: "soup", meaning: "スープ", emoji: "🍲", explanation: "体が温まる液体の料理！"},
+                {word: "sandwich", meaning: "サンドイッチ", emoji: "🥪", explanation: "パンに具を挟んだ食べ物！"},
+                {word: "hamburger", meaning: "ハンバーガー", emoji: "🍔", explanation: "パンにお肉を挟んだ料理！"},
+                {word: "noodles", meaning: "めん", emoji: "🍜", explanation: "長い麺の料理だよ！"},
+                {word: "ice cream", meaning: "アイスクリーム", emoji: "🍦", explanation: "冷たくて甘いお菓子！"},
+                {word: "chocolate", meaning: "チョコレート", emoji: "🍫", explanation: "甘くて美味しいお菓子！"},
+                {word: "candy", meaning: "あめ", emoji: "🍬", explanation: "小さくて甘いお菓子！"},
+                {word: "honey", meaning: "はちみつ", emoji: "🍯", explanation: "蜂が作る甘い食べ物！"}
+            ],
+            nature: [
+                {word: "flower", meaning: "はな", emoji: "🌸", explanation: "きれいで香りがいいね！"},
+                {word: "grass", meaning: "くさ", emoji: "🌱", explanation: "緑色の小さな植物だよ！"},
+                {word: "mountain", meaning: "やま", emoji: "⛰️", explanation: "高くてそびえ立つよ！"},
+                {word: "river", meaning: "かわ", emoji: "🏞️", explanation: "きれいな水が流れているよ！"},
+                {word: "ocean", meaning: "うみ", emoji: "🌊", explanation: "広くて深い水の世界だね！"},
+                {word: "forest", meaning: "もり", emoji: "🌲", explanation: "たくさんの木がある場所！"},
+                {word: "star", meaning: "ほし", emoji: "⭐", explanation: "夜空で光るよ！"},
+                {word: "cloud", meaning: "くも", emoji: "☁️", explanation: "空に浮かぶ白いもの！"},
+                {word: "wind", meaning: "かぜ", emoji: "💨", explanation: "空気が動いているよ！"},
+                {word: "snow", meaning: "ゆき", emoji: "❄️", explanation: "冬に降る白いもの！"},
+                {word: "stone", meaning: "いし", emoji: "🪨", explanation: "硬くて重いものだよ！"},
+                {word: "sand", meaning: "すな", emoji: "🏖️", explanation: "海辺にある細かい粒！"},
+                {word: "leaf", meaning: "はっぱ", emoji: "🍃", explanation: "木についている緑のもの！"},
+                {word: "seed", meaning: "たね", emoji: "🌰", explanation: "植物の赤ちゃんだよ！"},
+                {word: "root", meaning: "ね", emoji: "🌿", explanation: "植物の地下にある部分！"},
+                {word: "branch", meaning: "えだ", emoji: "🌳", explanation: "木の幹から出ている部分！"},
+                {word: "fruit", meaning: "くだもの", emoji: "🍎", explanation: "甘くて美味しい植物の実！"},
+                {word: "garden", meaning: "にわ", emoji: "🏡", explanation: "花や野菜を育てる場所！"},
+                {word: "park", meaning: "こうえん", emoji: "🏞️", explanation: "みんなが遊べる緑の場所！"},
+                {word: "field", meaning: "はたけ", emoji: "🌾", explanation: "作物を育てる広い場所！"},
+                {word: "lake", meaning: "みずうみ", emoji: "🏞️", explanation: "大きな水のたまり場！"},
+                {word: "beach", meaning: "はまべ", emoji: "🏖️", explanation: "海と陸の境目だよ！"},
+                {word: "hill", meaning: "おか", emoji: "🏔️", explanation: "小さな山のような場所！"},
+                {word: "valley", meaning: "たに", emoji: "🏞️", explanation: "山と山の間の低い場所！"},
+                {word: "cave", meaning: "ほらあな", emoji: "🕳️", explanation: "岩や山にある穴だよ！"}
+            ],
+            school: [
+                {word: "school", meaning: "がっこう", emoji: "🏫", explanation: "勉強する場所だね！"},
+                {word: "teacher", meaning: "せんせい", emoji: "👩‍🏫", explanation: "勉強を教えてくれる人！"},
+                {word: "student", meaning: "せいと", emoji: "👨‍🎓", explanation: "学校で勉強する人だよ！"},
+                {word: "classroom", meaning: "きょうしつ", emoji: "🏫", explanation: "授業を受ける部屋だよ！"},
+                {word: "desk", meaning: "つくえ", emoji: "🪑", explanation: "勉強するときに使うよ！"},
+                {word: "blackboard", meaning: "こくばん", emoji: "📋", explanation: "先生が字を書く黒い板！"},
+                {word: "pencil", meaning: "えんぴつ", emoji: "✏️", explanation: "字を書くときに使うよ！"},
+                {word: "eraser", meaning: "けしゴム", emoji: "🧽", explanation: "間違いを消すときに使うよ！"},
+                {word: "ruler", meaning: "じょうぎ", emoji: "📏", explanation: "まっすぐな線を引くよ！"},
+                {word: "bag", meaning: "かばん", emoji: "🎒", explanation: "学校の道具を入れるよ！"},
+                {word: "notebook", meaning: "ノート", emoji: "📓", explanation: "勉強したことを書くよ！"},
+                {word: "test", meaning: "テスト", emoji: "📝", explanation: "勉強したことを確かめるよ！"},
+                {word: "homework", meaning: "しゅくだい", emoji: "📚", explanation: "家でする勉強だよ！"},
+                {word: "library", meaning: "としょかん", emoji: "📚", explanation: "たくさんの本がある場所！"},
+                {word: "playground", meaning: "うんどうじょう", emoji: "🏃", explanation: "体育をする場所だよ！"},
+                {word: "lunch", meaning: "きゅうしょく", emoji: "🍱", explanation: "学校で食べるお昼ごはん！"},
+                {word: "friend", meaning: "ともだち", emoji: "👫", explanation: "一緒に遊ぶ大切な人だよ！"},
+                {word: "music", meaning: "おんがく", emoji: "🎵", explanation: "心を豊かにしてくれるよ！"},
+                {word: "art", meaning: "びじゅつ", emoji: "🎨", explanation: "絵を描いたり作品を作るよ！"},
+                {word: "science", meaning: "かがく", emoji: "🔬", explanation: "自然の仕組みを学ぶよ！"},
+                {word: "math", meaning: "さんすう", emoji: "🔢", explanation: "数字を使って計算するよ！"},
+                {word: "reading", meaning: "どくしょ", emoji: "📖", explanation: "本を読んで学ぶよ！"},
+                {word: "writing", meaning: "しゅうじ", emoji: "✍️", explanation: "文字を美しく書くよ！"},
+                {word: "computer", meaning: "コンピューター", emoji: "💻", explanation: "いろんなことができる機械！"},
+                {word: "lesson", meaning: "じゅぎょう", emoji: "📚", explanation: "先生が教えてくれる時間！"}
+            ],
+            family: [
+                {word: "family", meaning: "かぞく", emoji: "👨‍👩‍👧‍👦", explanation: "愛してくれる人たちだね！"},
+                {word: "father", meaning: "おとうさん", emoji: "👨", explanation: "家族のお父さんだよ！"},
+                {word: "mother", meaning: "おかあさん", emoji: "👩", explanation: "家族のお母さんだよ！"},
+                {word: "brother", meaning: "おにいさん", emoji: "👦", explanation: "男の兄弟だよ！"},
+                {word: "sister", meaning: "おねえさん", emoji: "👧", explanation: "女の兄弟だよ！"},
+                {word: "grandfather", meaning: "おじいさん", emoji: "👴", explanation: "お父さんのお父さんだよ！"},
+                {word: "grandmother", meaning: "おばあさん", emoji: "👵", explanation: "お母さんのお母さんだよ！"},
+                {word: "baby", meaning: "あかちゃん", emoji: "👶", explanation: "小さくてかわいい家族！"},
+                {word: "uncle", meaning: "おじさん", emoji: "👨", explanation: "お父さんの兄弟だよ！"},
+                {word: "aunt", meaning: "おばさん", emoji: "👩", explanation: "お母さんの姉妹だよ！"},
+                {word: "cousin", meaning: "いとこ", emoji: "👫", explanation: "おじさんやおばさんの子供！"},
+                {word: "pet", meaning: "ペット", emoji: "🐕", explanation: "家族として飼っている動物！"},
+                {word: "home", meaning: "いえ", emoji: "🏠", explanation: "家族みんなが住む場所！"},
+                {word: "room", meaning: "へや", emoji: "🏠", explanation: "家の中の空間だよ！"},
+                {word: "bed", meaning: "ベッド", emoji: "🛏️", explanation: "夜に寝るときに使うよ！"},
+                {word: "kitchen", meaning: "だいどころ", emoji: "🍳", explanation: "料理を作る場所だよ！"},
+                {word: "bathroom", meaning: "おふろ", emoji: "🛁", explanation: "体をきれいにする場所！"},
+                {word: "dinner", meaning: "ばんごはん", emoji: "🍽️", explanation: "家族で食べる夜ごはん！"},
+                {word: "love", meaning: "あい", emoji: "❤️", explanation: "家族への大切な気持ち！"},
+                {word: "birthday", meaning: "たんじょうび", emoji: "🎂", explanation: "生まれた日をお祝いする日！"},
+                {word: "present", meaning: "プレゼント", emoji: "🎁", explanation: "大切な人にあげる贈り物！"},
+                {word: "vacation", meaning: "きゅうか", emoji: "🏖️", explanation: "家族で過ごす楽しい時間！"},
+                {word: "picnic", meaning: "ピクニック", emoji: "🧺", explanation: "外で食べる楽しい食事！"},
+                {word: "photo", meaning: "しゃしん", emoji: "📷", explanation: "思い出を残すための写真！"},
+                {word: "story", meaning: "おはなし", emoji: "📖", explanation: "家族で楽しむお話！"}
+            ],
+            colors: [
+                {word: "red", meaning: "あか", emoji: "🔴", explanation: "りんごの色だよ！"},
+                {word: "blue", meaning: "あお", emoji: "🔵", explanation: "空の色だね！"},
+                {word: "yellow", meaning: "きいろ", emoji: "🟡", explanation: "太陽の色だよ！"},
+                {word: "green", meaning: "みどり", emoji: "🟢", explanation: "草の色だね！"},
+                {word: "orange", meaning: "オレンジ", emoji: "🟠", explanation: "みかんの色だよ！"},
+                {word: "purple", meaning: "むらさき", emoji: "🟣", explanation: "ぶどうの色だね！"},
+                {word: "pink", meaning: "ピンク", emoji: "🩷", explanation: "桜の色だよ！"},
+                {word: "brown", meaning: "ちゃいろ", emoji: "🟤", explanation: "土の色だね！"},
+                {word: "black", meaning: "くろ", emoji: "⚫", explanation: "夜の色だよ！"},
+                {word: "white", meaning: "しろ", emoji: "⚪", explanation: "雪の色だね！"},
+                {word: "gray", meaning: "はいいろ", emoji: "🔘", explanation: "雲の色だよ！"},
+                {word: "gold", meaning: "きん", emoji: "🟨", explanation: "宝物の色だね！"},
+                {word: "silver", meaning: "ぎん", emoji: "⚪", explanation: "お月様の色だよ！"},
+                {word: "rainbow", meaning: "にじ", emoji: "🌈", explanation: "7つの色が見える美しいもの！"},
+                {word: "light", meaning: "あかるい", emoji: "💡", explanation: "明るい色のことだよ！"},
+                {word: "dark", meaning: "くらい", emoji: "🌑", explanation: "暗い色のことだね！"},
+                {word: "bright", meaning: "あざやか", emoji: "✨", explanation: "はっきりした色だよ！"},
+                {word: "pale", meaning: "うすい", emoji: "🤍", explanation: "薄い色のことだね！"},
+                {word: "deep", meaning: "こい", emoji: "🔵", explanation: "濃い色のことだよ！"},
+                {word: "colorful", meaning: "カラフル", emoji: "🎨", explanation: "たくさんの色があること！"},
+                {word: "transparent", meaning: "とうめい", emoji: "💎", explanation: "透明で見えないよ！"},
+                {word: "shiny", meaning: "ひかる", emoji: "✨", explanation: "光って見える色だよ！"},
+                {word: "dull", meaning: "くすんだ", emoji: "🌫️", explanation: "光らない暗い色だね！"},
+                {word: "vivid", meaning: "あざやか", emoji: "🌺", explanation: "とても鮮やかな色だよ！"},
+                {word: "pastel", meaning: "パステル", emoji: "🌸", explanation: "やわらかい薄い色だね！"}
+            ],
+            body: [
+                {word: "head", meaning: "あたま", emoji: "👤", explanation: "体の一番上の部分だよ！"},
+                {word: "face", meaning: "かお", emoji: "😊", explanation: "目や鼻がある部分だね！"},
+                {word: "eye", meaning: "め", emoji: "👁️", explanation: "ものを見るときに使うよ！"},
+                {word: "ear", meaning: "みみ", emoji: "👂", explanation: "音を聞くときに使うよ！"},
+                {word: "mouth", meaning: "くち", emoji: "👄", explanation: "食べ物を食べるときに使うよ！"},
+                {word: "tooth", meaning: "は", emoji: "🦷", explanation: "食べ物を噛むときに使うよ！"},
+                {word: "neck", meaning: "くび", emoji: "🧑", explanation: "頭と体をつなぐ部分だよ！"},
+                {word: "shoulder", meaning: "かた", emoji: "🤷", explanation: "腕の上の部分だね！"},
+                {word: "arm", meaning: "うで", emoji: "💪", explanation: "ものを持つときに使うよ！"},
+                {word: "hand", meaning: "て", emoji: "✋", explanation: "ものをつかむときに使うよ！"},
+                {word: "finger", meaning: "ゆび", emoji: "👆", explanation: "手についている細い部分！"},
+                {word: "chest", meaning: "むね", emoji: "🫁", explanation: "心臓がある部分だよ！"},
+                {word: "back", meaning: "せなか", emoji: "🧑‍🦲", explanation: "体の後ろ側だね！"},
+                {word: "stomach", meaning: "おなか", emoji: "🤰", explanation: "食べ物が入る部分だよ！"},
+                {word: "leg", meaning: "あし", emoji: "🦵", explanation: "歩くときに使うよ！"},
+                {word: "foot", meaning: "あし", emoji: "🦶", explanation: "地面につく部分だね！"},
+                {word: "knee", meaning: "ひざ", emoji: "🦵", explanation: "足の真ん中で曲がる部分！"},
+                {word: "hair", meaning: "かみ", emoji: "💇", explanation: "頭に生えているよ！"},
+                {word: "skin", meaning: "はだ", emoji: "🤲", explanation: "体を覆っている部分だよ！"},
+                {word: "heart", meaning: "しんぞう", emoji: "❤️", explanation: "血液を送るポンプだよ！"},
+                {word: "brain", meaning: "のう", emoji: "🧠", explanation: "考えるときに使う大切な部分！"},
+                {word: "bone", meaning: "ほね", emoji: "🦴", explanation: "体を支える硬い部分！"},
+                {word: "muscle", meaning: "きんにく", emoji: "💪", explanation: "体を動かす力の源！"},
+                {word: "blood", meaning: "ち", emoji: "🩸", explanation: "体の中を流れる赤い液体！"},
+                {word: "breath", meaning: "いき", emoji: "💨", explanation: "生きるために必要な空気！"}
+            ],
+            sports: [
+                {word: "soccer", meaning: "サッカー", emoji: "⚽", explanation: "足でボールを蹴るスポーツ！"},
+                {word: "baseball", meaning: "やきゅう", emoji: "⚾", explanation: "バットでボールを打つスポーツ！"},
+                {word: "basketball", meaning: "バスケットボール", emoji: "🏀", explanation: "高いゴールにボールを入れるよ！"},
+                {word: "tennis", meaning: "テニス", emoji: "🎾", explanation: "ラケットでボールを打ち合うよ！"},
+                {word: "swimming", meaning: "すいえい", emoji: "🏊", explanation: "水の中を泳ぐスポーツ！"},
+                {word: "running", meaning: "ランニング", emoji: "🏃", explanation: "速く走るスポーツだよ！"},
+                {word: "jumping", meaning: "ジャンプ", emoji: "🤸", explanation: "高く飛び跳ねることだよ！"},
+                {word: "cycling", meaning: "じてんしゃ", emoji: "🚴", explanation: "自転車に乗るスポーツ！"},
+                {word: "skiing", meaning: "スキー", emoji: "⛷️", explanation: "雪の上を滑るスポーツ！"},
+                {word: "skating", meaning: "スケート", emoji: "⛸️", explanation: "氷の上を滑るスポーツ！"},
+                {word: "volleyball", meaning: "バレーボール", emoji: "🏐", explanation: "ネット越しにボールを打ち合うよ！"},
+                {word: "golf", meaning: "ゴルフ", emoji: "⛳", explanation: "小さなボールを穴に入れるよ！"},
+                {word: "boxing", meaning: "ボクシング", emoji: "🥊", explanation: "グローブをつけて戦うスポーツ！"},
+                {word: "dancing", meaning: "ダンス", emoji: "💃", explanation: "音楽に合わせて体を動かすよ！"},
+                {word: "yoga", meaning: "ヨガ", emoji: "🧘", explanation: "体を柔らかくする運動だよ！"},
+                {word: "surfing", meaning: "サーフィン", emoji: "🏄", explanation: "波に乗るスポーツだよ！"},
+                {word: "climbing", meaning: "クライミング", emoji: "🧗", explanation: "高いところに登るスポーツ！"},
+                {word: "fishing", meaning: "つり", emoji: "🎣", explanation: "魚を釣るスポーツだよ！"},
+                {word: "hiking", meaning: "ハイキング", emoji: "🥾", explanation: "山を歩くスポーツだね！"},
+                {word: "gymnastics", meaning: "たいそう", emoji: "🤸", explanation: "体を美しく動かすスポーツ！"},
+                {word: "badminton", meaning: "バドミントン", emoji: "🏸", explanation: "羽根つきのようなスポーツ！"},
+                {word: "bowling", meaning: "ボウリング", emoji: "🎳", explanation: "ピンを倒すスポーツだよ！"},
+                {word: "archery", meaning: "きゅうどう", emoji: "🏹", explanation: "弓で矢を射るスポーツ！"},
+                {word: "wrestling", meaning: "レスリング", emoji: "🤼", explanation: "相手と組み合って戦うスポーツ！"},
+                {word: "marathon", meaning: "マラソン", emoji: "🏃‍♂️", explanation: "とても長い距離を走るよ！"}
+            ],
+            weather: [
+                {word: "sunny", meaning: "はれ", emoji: "☀️", explanation: "太陽が出ている天気だよ！"},
+                {word: "cloudy", meaning: "くもり", emoji: "☁️", explanation: "雲が多い天気だね！"},
+                {word: "rainy", meaning: "あめ", emoji: "🌧️", explanation: "雨が降っている天気だよ！"},
+                {word: "snowy", meaning: "ゆき", emoji: "❄️", explanation: "雪が降っている天気だね！"},
+                {word: "windy", meaning: "かぜ", emoji: "💨", explanation: "風が強い天気だよ！"},
+                {word: "hot", meaning: "あつい", emoji: "🌡️", explanation: "気温が高い状態だね！"},
+                {word: "cold", meaning: "さむい", emoji: "🥶", explanation: "気温が低い状態だよ！"},
+                {word: "warm", meaning: "あたたかい", emoji: "🌤️", explanation: "ちょうどいい暖かさだね！"},
+                {word: "cool", meaning: "すずしい", emoji: "🍃", explanation: "ちょうどいい涼しさだよ！"},
+                {word: "storm", meaning: "あらし", emoji: "⛈️", explanation: "強い風と雨の天気だよ！"},
+                {word: "thunder", meaning: "かみなり", emoji: "⚡", explanation: "空で光る電気だよ！"},
+                {word: "lightning", meaning: "いなずま", emoji: "⚡", explanation: "空に走る光だね！"},
+                {word: "fog", meaning: "きり", emoji: "🌫️", explanation: "白いもやがかかった天気！"},
+                {word: "frost", meaning: "しも", emoji: "❄️", explanation: "寒い朝にできる白いもの！"},
+                {word: "humidity", meaning: "しつど", emoji: "💧", explanation: "空気中の水分の量だよ！"},
+                {word: "temperature", meaning: "おんど", emoji: "🌡️", explanation: "暑さや寒さの度合いだね！"},
+                {word: "season", meaning: "きせつ", emoji: "🍂", explanation: "春夏秋冬のことだよ！"},
+                {word: "spring", meaning: "はる", emoji: "🌸", explanation: "花が咲く暖かい季節！"},
+                {word: "summer", meaning: "なつ", emoji: "🏖️", explanation: "一番暑い季節だよ！"},
+                {word: "autumn", meaning: "あき", emoji: "🍂", explanation: "葉っぱが色づく季節だね！"},
+                {word: "winter", meaning: "ふゆ", emoji: "⛄", explanation: "雪が降る寒い季節だよ！"},
+                {word: "rainbow", meaning: "にじ", emoji: "🌈", explanation: "雨上がりに見える美しい色！"},
+                {word: "sunshine", meaning: "ひざし", emoji: "🌞", explanation: "太陽の明るい光だよ！"},
+                {word: "shadow", meaning: "かげ", emoji: "🌑", explanation: "光が遮られてできる暗い部分！"},
+                {word: "breeze", meaning: "そよかぜ", emoji: "🍃", explanation: "やわらかく吹く風だよ！"}
+            ],
+            actions: [
+                {word: "walk", meaning: "あるく", emoji: "🚶", explanation: "足で前に進むことだよ！"},
+                {word: "run", meaning: "はしる", emoji: "🏃", explanation: "速く移動することだね！"},
+                {word: "jump", meaning: "とぶ", emoji: "🦘", explanation: "高く飛び上がることだよ！"},
+                {word: "swim", meaning: "およぐ", emoji: "🏊", explanation: "水の中を進むことだね！"},
+                {word: "fly", meaning: "とぶ", emoji: "🕊️", explanation: "空中を移動することだよ！"},
+                {word: "eat", meaning: "たべる", emoji: "🍽️", explanation: "食べ物を口に入れることだね！"},
+                {word: "drink", meaning: "のむ", emoji: "🥤", explanation: "液体を口に入れることだよ！"},
+                {word: "sleep", meaning: "ねる", emoji: "😴", explanation: "体を休めることだね！"},
+                {word: "wake", meaning: "おきる", emoji: "⏰", explanation: "眠りから覚めることだよ！"},
+                {word: "sit", meaning: "すわる", emoji: "🪑", explanation: "椅子などに腰を下ろすことだね！"},
+                {word: "stand", meaning: "たつ", emoji: "🧍", explanation: "足で体を支えることだよ！"},
+                {word: "lie", meaning: "よこになる", emoji: "🛏️", explanation: "体を横にすることだね！"},
+                {word: "read", meaning: "よむ", emoji: "📖", explanation: "文字を見て理解することだよ！"},
+                {word: "write", meaning: "かく", emoji: "✍️", explanation: "文字や絵を描くことだね！"},
+                {word: "listen", meaning: "きく", emoji: "👂", explanation: "音や声に注意を向けることだよ！"},
+                {word: "speak", meaning: "はなす", emoji: "🗣️", explanation: "声に出して言葉を言うことだね！"},
+                {word: "look", meaning: "みる", emoji: "👀", explanation: "目を向けて見ることだよ！"},
+                {word: "touch", meaning: "さわる", emoji: "👋", explanation: "手で物に触れることだね！"},
+                {word: "smell", meaning: "におう", emoji: "👃", explanation: "鼻でにおいを感じることだよ！"},
+                {word: "taste", meaning: "あじわう", emoji: "👅", explanation: "舌で味を感じることだね！"},
+                {word: "think", meaning: "かんがえる", emoji: "🤔", explanation: "頭で考えることだよ！"},
+                {word: "laugh", meaning: "わらう", emoji: "😂", explanation: "楽しくて声を出すことだね！"},
+                {word: "cry", meaning: "なく", emoji: "😢", explanation: "悲しくて涙を流すことだよ！"},
+                {word: "sing", meaning: "うたう", emoji: "🎤", explanation: "声に出して歌うことだね！"},
+                {word: "dance", meaning: "おどる", emoji: "💃", explanation: "音楽に合わせて体を動かすことだよ！"}
+            ],
+            objects: [
+                {word: "ball", meaning: "ボール", emoji: "⚽", explanation: "丸い形の遊び道具だよ！"},
+                {word: "toy", meaning: "おもちゃ", emoji: "🧸", explanation: "遊ぶときに使う物だね！"},
+                {word: "phone", meaning: "でんわ", emoji: "📞", explanation: "遠くの人と話せる機械だよ！"},
+                {word: "clock", meaning: "とけい", emoji: "⏰", explanation: "時間を教えてくれる物だね！"},
+                {word: "mirror", meaning: "かがみ", emoji: "🪞", explanation: "自分の姿が映る物だよ！"},
+                {word: "brush", meaning: "ブラシ", emoji: "🪥", explanation: "髪や歯をきれいにする道具だね！"},
+                {word: "soap", meaning: "せっけん", emoji: "🧼", explanation: "体をきれいに洗う物だよ！"},
+                {word: "towel", meaning: "タオル", emoji: "🏖️", explanation: "体を拭くときに使う布だね！"},
+                {word: "umbrella", meaning: "かさ", emoji: "☂️", explanation: "雨から守ってくれる道具だよ！"},
+                {word: "hat", meaning: "ぼうし", emoji: "👒", explanation: "頭にかぶる物だね！"},
+                {word: "shoes", meaning: "くつ", emoji: "👟", explanation: "足に履く物だよ！"},
+                {word: "clothes", meaning: "ふく", emoji: "👕", explanation: "体に着る物だね！"},
+                {word: "bag", meaning: "かばん", emoji: "👜", explanation: "物を入れて持ち運ぶ物だよ！"},
+                {word: "camera", meaning: "カメラ", emoji: "📷", explanation: "写真を撮る機械だね！"},
+                {word: "bicycle", meaning: "じてんしゃ", emoji: "🚲", explanation: "ペダルをこいで進む乗り物だよ！"},
+                {word: "train", meaning: "でんしゃ", emoji: "🚂", explanation: "線路の上を走る乗り物だね！"},
+                {word: "airplane", meaning: "ひこうき", emoji: "✈️", explanation: "空を飛ぶ乗り物だよ！"},
+                {word: "boat", meaning: "ふね", emoji: "⛵", explanation: "水の上を進む乗り物だね！"},
+                {word: "guitar", meaning: "ギター", emoji: "🎸", explanation: "弦を弾いて音を出す楽器だよ！"},
+                {word: "piano", meaning: "ピアノ", emoji: "🎹", explanation: "鍵盤を押して音を出す楽器だね！"},
+                {word: "drum", meaning: "ドラム", emoji: "🥁", explanation: "叩いて音を出す楽器だよ！"},
+                {word: "trumpet", meaning: "トランペット", emoji: "🎺", explanation: "息を吹いて音を出す楽器だね！"},
+                {word: "violin", meaning: "バイオリン", emoji: "🎻", explanation: "弓で弦をこすって音を出す楽器だよ！"},
+                {word: "flute", meaning: "フルート", emoji: "🪈", explanation: "横に構えて吹く楽器だね！"},
+                {word: "bell", meaning: "ベル", emoji: "🔔", explanation: "振ると音が出る物だよ！"}
+            ],
+            emotions: [
+                {word: "happy", meaning: "うれしい", emoji: "😊", explanation: "楽しい気持ちだよ！"},
+                {word: "sad", meaning: "かなしい", emoji: "😢", explanation: "つらい気持ちだね！"},
+                {word: "angry", meaning: "おこる", emoji: "😠", explanation: "怒った気持ちだよ！"},
+                {word: "excited", meaning: "わくわく", emoji: "🤩", explanation: "楽しみな気持ちだね！"},
+                {word: "scared", meaning: "こわい", emoji: "😨", explanation: "恐ろしい気持ちだよ！"},
+                {word: "surprised", meaning: "びっくり", emoji: "😲", explanation: "驚いた気持ちだね！"},
+                {word: "tired", meaning: "つかれた", emoji: "😴", explanation: "疲れた気持ちだよ！"},
+                {word: "hungry", meaning: "おなかすいた", emoji: "🤤", explanation: "食べたい気持ちだね！"},
+                {word: "thirsty", meaning: "のどかわいた", emoji: "🥵", explanation: "飲みたい気持ちだよ！"},
+                {word: "sleepy", meaning: "ねむい", emoji: "😪", explanation: "眠たい気持ちだね！"},
+                {word: "bored", meaning: "たいくつ", emoji: "😑", explanation: "つまらない気持ちだよ！"},
+                {word: "nervous", meaning: "きんちょう", emoji: "😰", explanation: "ドキドキする気持ちだね！"},
+                {word: "calm", meaning: "おちつく", emoji: "😌", explanation: "静かな気持ちだよ！"},
+                {word: "proud", meaning: "ほこらしい", emoji: "😤", explanation: "誇らしい気持ちだね！"},
+                {word: "shy", meaning: "はずかしい", emoji: "😳", explanation: "恥ずかしい気持ちだよ！"},
+                {word: "curious", meaning: "きょうみ", emoji: "🤔", explanation: "知りたい気持ちだね！"},
+                {word: "confused", meaning: "こんらん", emoji: "😕", explanation: "わからない気持ちだよ！"},
+                {word: "grateful", meaning: "かんしゃ", emoji: "🙏", explanation: "ありがたい気持ちだね！"},
+                {word: "lonely", meaning: "さびしい", emoji: "😔", explanation: "一人で寂しい気持ちだよ！"},
+                {word: "jealous", meaning: "うらやましい", emoji: "😒", explanation: "羨ましい気持ちだね！"},
+                {word: "worried", meaning: "しんぱい", emoji: "😟", explanation: "心配な気持ちだよ！"},
+                {word: "relaxed", meaning: "リラックス", emoji: "😎", explanation: "のんびりした気持ちだね！"},
+                {word: "disappointed", meaning: "がっかり", emoji: "😞", explanation: "期待外れの気持ちだよ！"},
+                {word: "hopeful", meaning: "きぼう", emoji: "🤗", explanation: "希望に満ちた気持ちだね！"},
+                {word: "amazed", meaning: "かんどう", emoji: "😍", explanation: "感動した気持ちだよ！"}
+            ],
+            time: [
+                {word: "morning", meaning: "あさ", emoji: "🌅", explanation: "一日の始まりの時間だよ！"},
+                                {word: "afternoon", meaning: "ごご", emoji: "☀️", explanation: "お昼から夕方までの時間だね！"},
+                {word: "evening", meaning: "ゆうがた", emoji: "🌆", explanation: "夕方の時間だよ！"},
+                {word: "night", meaning: "よる", emoji: "🌙", explanation: "暗くなった時間だよ！"},
+                {word: "today", meaning: "きょう", emoji: "📅", explanation: "今日という日だね！"},
+                {word: "tomorrow", meaning: "あした", emoji: "🌅", explanation: "次の日のことだよ！"},
+                {word: "yesterday", meaning: "きのう", emoji: "📆", explanation: "前の日のことだね！"},
+                {word: "week", meaning: "しゅう", emoji: "📅", explanation: "7日間のことだよ！"},
+                {word: "month", meaning: "つき", emoji: "🗓️", explanation: "約30日間のことだね！"},
+                {word: "year", meaning: "ねん", emoji: "🎊", explanation: "12ヶ月間のことだよ！"},
+                {word: "hour", meaning: "じかん", emoji: "⏰", explanation: "60分のことだね！"},
+                {word: "minute", meaning: "ふん", emoji: "⏱️", explanation: "60秒のことだよ！"},
+                {word: "second", meaning: "びょう", emoji: "⏲️", explanation: "とても短い時間だね！"},
+                {word: "early", meaning: "はやい", emoji: "🌅", explanation: "時間が早いことだよ！"},
+                {word: "late", meaning: "おそい", emoji: "🌙", explanation: "時間が遅いことだね！"},
+                {word: "fast", meaning: "はやい", emoji: "💨", explanation: "速度が速いことだよ！"},
+                {word: "slow", meaning: "おそい", emoji: "🐌", explanation: "速度が遅いことだね！"},
+                {word: "now", meaning: "いま", emoji: "⏰", explanation: "この瞬間のことだよ！"},
+                {word: "soon", meaning: "もうすぐ", emoji: "⏳", explanation: "近い将来のことだね！"},
+                {word: "later", meaning: "あとで", emoji: "⏰", explanation: "後の時間のことだよ！"},
+                {word: "before", meaning: "まえ", emoji: "⏪", explanation: "以前の時間のことだね！"},
+                {word: "after", meaning: "あと", emoji: "⏩", explanation: "後の時間のことだよ！"},
+                {word: "always", meaning: "いつも", emoji: "🔄", explanation: "いつでもということだね！"},
+                {word: "never", meaning: "ぜったい", emoji: "🚫", explanation: "絶対にないということだよ！"},
+                {word: "sometimes", meaning: "ときどき", emoji: "🔀", explanation: "たまにということだね！"},
+                {word: "often", meaning: "よく", emoji: "🔁", explanation: "頻繁にということだよ！"},
+                {word: "rarely", meaning: "めったに", emoji: "🔸", explanation: "ほとんどないということだね！"},
+                {word: "daily", meaning: "まいにち", emoji: "📅", explanation: "毎日のことだよ！"}
+            ],
+            numbers: [
+                {word: "one", meaning: "いち", emoji: "1️⃣", explanation: "数字の1だよ！"},
+                {word: "two", meaning: "に", emoji: "2️⃣", explanation: "数字の2だね！"},
+                {word: "three", meaning: "さん", emoji: "3️⃣", explanation: "数字の3だよ！"},
+                {word: "four", meaning: "よん", emoji: "4️⃣", explanation: "数字の4だね！"},
+                {word: "five", meaning: "ご", emoji: "5️⃣", explanation: "数字の5だよ！"},
+                {word: "six", meaning: "ろく", emoji: "6️⃣", explanation: "数字の6だね！"},
+                {word: "seven", meaning: "なな", emoji: "7️⃣", explanation: "数字の7だよ！"},
+                {word: "eight", meaning: "はち", emoji: "8️⃣", explanation: "数字の8だね！"},
+                {word: "nine", meaning: "きゅう", emoji: "9️⃣", explanation: "数字の9だよ！"},
+                {word: "ten", meaning: "じゅう", emoji: "🔟", explanation: "数字の10だね！"},
+                {word: "eleven", meaning: "じゅういち", emoji: "1️⃣1️⃣", explanation: "数字の11だよ！"},
+                {word: "twelve", meaning: "じゅうに", emoji: "1️⃣2️⃣", explanation: "数字の12だね！"},
+                {word: "thirteen", meaning: "じゅうさん", emoji: "1️⃣3️⃣", explanation: "数字の13だよ！"},
+                {word: "fourteen", meaning: "じゅうよん", emoji: "1️⃣4️⃣", explanation: "数字の14だね！"},
+                {word: "fifteen", meaning: "じゅうご", emoji: "1️⃣5️⃣", explanation: "数字の15だよ！"},
+                {word: "sixteen", meaning: "じゅうろく", emoji: "1️⃣6️⃣", explanation: "数字の16だね！"},
+                {word: "seventeen", meaning: "じゅうなな", emoji: "1️⃣7️⃣", explanation: "数字の17だよ！"},
+                {word: "eighteen", meaning: "じゅうはち", emoji: "1️⃣8️⃣", explanation: "数字の18だね！"},
+                {word: "nineteen", meaning: "じゅうきゅう", emoji: "1️⃣9️⃣", explanation: "数字の19だよ！"},
+                {word: "twenty", meaning: "にじゅう", emoji: "2️⃣0️⃣", explanation: "数字の20だね！"},
+                {word: "thirty", meaning: "さんじゅう", emoji: "3️⃣0️⃣", explanation: "数字の30だよ！"},
+                {word: "forty", meaning: "よんじゅう", emoji: "4️⃣0️⃣", explanation: "数字の40だね！"},
+                {word: "fifty", meaning: "ごじゅう", emoji: "5️⃣0️⃣", explanation: "数字の50だよ！"},
+                {word: "hundred", meaning: "ひゃく", emoji: "💯", explanation: "数字の100だね！"},
+                {word: "thousand", meaning: "せん", emoji: "🔢", explanation: "数字の1000だよ！"}
+            ]
+        };
+
+        // 間違い選択肢用のデータ
+        const wrongAnswers = [
+            "みかん", "ばなな", "ぶどう", "いちご", "すいか", "めろん", "もも", "なし", 
+            "きつね", "うさぎ", "ぞう", "きりん", "ぺん", "のーと", "つくえ", "いす", 
+            "でんしゃ", "ひこうき", "ふね", "じてんしゃ", "えんぴつ", "けしゴム", "はさみ", "のり",
+            "あか", "あお", "きいろ", "みどり", "しろ", "くろ", "ピンク", "むらさき",
+            "あたま", "かお", "て", "あし", "め", "みみ", "はな", "くち",
+            "はる", "なつ", "あき", "ふゆ", "あさ", "ひる", "よる", "ばん",
+            "うれしい", "かなしい", "おこる", "びっくり", "つかれた", "ねむい", "おなかすいた",
+            "あるく", "はしる", "とぶ", "およぐ", "たべる", "のむ", "ねる", "おきる"
+        ];
+
+        let currentCategory = 'all';
+        let currentLevel = 1;
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLimit = 30;
+        let timeLeft = 30;
+        let timer;
+        let questionStartTime;
+        let correctAnswers = 0;
+        let currentQuestions = [];
+
+        // 改良された音声再生機能[1]
+        function playCorrectSound() {
+            try {
+                // Web Audio APIで合成音声を作成（音量大きく設定）[1]
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 「ピン」音（高音）
+                const oscillator1 = audioContext.createOscillator();
+                const gainNode1 = audioContext.createGain();
+                oscillator1.connect(gainNode1);
+                gainNode1.connect(audioContext.destination);
+                
+                oscillator1.frequency.setValueAtTime(1200, audioContext.currentTime);
+                oscillator1.type = 'sine';
+                gainNode1.gain.setValueAtTime(0.8, audioContext.currentTime); // 音量を大きく
+                gainNode1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator1.start(audioContext.currentTime);
+                oscillator1.stop(audioContext.currentTime + 0.3);
+                
+                // 「ポーン」音（中音）- 少し遅れて
+                setTimeout(() => {
+                    const oscillator2 = audioContext.createOscillator();
+                    const gainNode2 = audioContext.createGain();
+                    oscillator2.connect(gainNode2);
+                    gainNode2.connect(audioContext.destination);
+                    
+                    oscillator2.frequency.setValueAtTime(800, audioContext.currentTime);
+                    oscillator2.type = 'sine';
+                    gainNode2.gain.setValueAtTime(0.8, audioContext.currentTime); // 音量を大きく
+                    gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    
+                    oscillator2.start(audioContext.currentTime);
+                    oscillator2.stop(audioContext.currentTime + 0.5);
+                }, 150);
+                
+                console.log('正解音を再生しました');
+            } catch (error) {
+                console.log('正解音の再生に失敗しました:', error);
+            }
+        }
+
+        function playWrongSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 「ブブー」音（低音で長め）
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+                oscillator.type = 'sawtooth';
+                gainNode.gain.setValueAtTime(0.6, audioContext.currentTime); // 音量を大きく
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 1.2);
+                
+                console.log('不正解音を再生しました');
+            } catch (error) {
+                console.log('不正解音の再生に失敗しました:', error);
+            }
+        }
+
+        // 音声読み上げ機能[9][10][11][12][13]
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                utterance.volume = 1.0; // 音量を最大に
+                
+                const voices = speechSynthesis.getVoices();
+                const englishVoice = voices.find(voice => 
+                    voice.lang.includes('en') && voice.name.includes('Google')
+                ) || voices.find(voice => voice.lang.includes('en'));
+                
+                if (englishVoice) {
+                    utterance.voice = englishVoice;
+                }
+                
+                speechSynthesis.speak(utterance);
+                console.log('英単語を読み上げました:', word);
+            } else {
+                console.log('音声合成はサポートされていません');
+            }
+        }
+
+        function speakWordAutomatically(word) {
+            setTimeout(() => {
+                speakWord(word);
+            }, 1000);
+        }
+
+        function speakCurrentWord() {
+            const currentWord = document.getElementById('word-text').textContent;
+            speakWord(currentWord);
+        }
+
+        function selectCategory(category) {
+            currentCategory = category;
+            const buttons = document.querySelectorAll('.category-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function getAllQuestions() {
+            if (currentCategory === 'all') {
+                let allQuestions = [];
+                Object.values(gameData).forEach(category => {
+                    allQuestions = allQuestions.concat(category);
+                });
+                return allQuestions;
+            } else {
+                return gameData[currentCategory] || [];
+            }
+        }
+
+        function startGame() {
+            timeLimit = parseInt(document.getElementById('time-input').value);
+            timeLeft = timeLimit;
+            
+            const allQuestions = getAllQuestions();
+            currentQuestions = shuffleArray(allQuestions).slice(0, 10);
+            
+            document.getElementById('timer-setup').classList.add('hidden');
+            document.getElementById('game-area').classList.remove('hidden');
+            loadQuestion();
+            startTimer();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= currentQuestions.length) {
+                if (correctAnswers >= 8) {
+                    levelComplete();
+                } else {
+                    gameOver();
+                }
+                return;
+            }
+
+            const question = currentQuestions[currentQuestion];
+            
+            document.getElementById('level').textContent = currentLevel;
+            document.getElementById('question-num').textContent = currentQuestion + 1;
+            document.getElementById('points').textContent = score;
+            document.getElementById('timer').textContent = timeLeft;
+            
+            const progress = ((currentQuestion + 1) / 10) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+            
+            const imageElement = document.getElementById('word-image');
+            imageElement.textContent = '❓';
+            imageElement.className = 'word-image image-hidden';
+            
+            document.getElementById('word-text').textContent = question.word;
+            
+            const options = generateOptions(question.meaning);
+            const optionButtons = document.querySelectorAll('.option-btn');
+            
+            optionButtons.forEach((btn, index) => {
+                btn.textContent = options[index];
+                btn.className = 'option-btn';
+                btn.disabled = false;
+            });
+            
+            document.getElementById('explanation').style.display = 'none';
+            questionStartTime = Date.now();
+            
+            speakWordAutomatically(question.word);
+        }
+
+        function generateOptions(correct) {
+            const options = [correct];
+            const availableWrong = wrongAnswers.filter(w => w !== correct);
+            
+            while (options.length < 4) {
+                const randomWrong = availableWrong[Math.floor(Math.random() * availableWrong.length)];
+                if (!options.includes(randomWrong)) {
+                    options.push(randomWrong);
+                }
+            }
+            
+            return shuffleArray(options);
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function selectAnswer(index) {
+            const question = currentQuestions[currentQuestion];
+            const selectedAnswer = document.querySelectorAll('.option-btn')[index].textContent;
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            const imageElement = document.getElementById('word-image');
+            imageElement.textContent = question.emoji;
+            imageElement.className = 'word-image';
+            
+            if (selectedAnswer === question.meaning) {
+                buttons[index].classList.add('correct');
+                const timeBonus = Math.max(0, Math.floor((timeLimit - (Date.now() - questionStartTime) / 1000) * 10));
+                score += 100 + timeBonus;
+                correctAnswers++;
+                
+                playCorrectSound();
+                
+                document.getElementById('explanation').innerHTML = `
+                    <strong>正解！</strong><br>
+                    ${question.explanation}<br>
+                    <small>タイムボーナス: ${timeBonus}点</small>
+                `;
+            } else {
+                buttons[index].classList.add('wrong');
+                buttons.forEach((btn, i) => {
+                    if (btn.textContent === question.meaning) {
+                        btn.classList.add('correct');
+                    }
+                });
+                
+                playWrongSound();
+                
+                document.getElementById('explanation').innerHTML = `
+                    <strong>正解は「${question.meaning}」でした</strong><br>
+                    ${question.explanation}
+                `;
+            }
+            
+            document.getElementById('explanation').style.display = 'block';
+            document.getElementById('points').textContent = score;
+            
+            setTimeout(() => {
+                currentQuestion++;
+                loadQuestion();
+            }, 3000);
+        }
+
+        function levelComplete() {
+            clearInterval(timer);
+            const bonusPoints = currentLevel * 1000;
+            score += bonusPoints;
+            
+            document.getElementById('game-area').classList.add('hidden');
+            document.getElementById('level-complete').classList.remove('hidden');
+            document.getElementById('bonus-points').textContent = bonusPoints;
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            currentQuestion = 0;
+            correctAnswers = 0;
+            timeLeft = timeLimit;
+            
+            if (currentLevel > 10) {
+                gameOver();
+                return;
+            }
+            
+            const allQuestions = getAllQuestions();
+            currentQuestions = shuffleArray(allQuestions).slice(0, 10);
+            
+            document.getElementById('level-complete').classList.add('hidden');
+            document.getElementById('game-area').classList.remove('hidden');
+            loadQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    gameOver();
+                }
+            }, 1000);
+        }
+
+        function gameOver() {
+            clearInterval(timer);
+            document.getElementById('game-area').classList.add('hidden');
+            document.getElementById('level-complete').classList.add('hidden');
+            document.getElementById('game-over').classList.remove('hidden');
+            
+            const rank = getRank(score);
+            document.getElementById('final-rank').innerHTML = `
+                <div>最終スコア: ${score}点</div>
+                <div>到達レベル: ${currentLevel}</div>
+                <div>あなたの階級: ${rank}</div>
+            `;
+        }
+
+        function getRank(points) {
+            if (points >= 20000) return "🏆 英語大王 🏆";
+            if (points >= 15000) return "👑 英語皇帝 👑";
+            if (points >= 12000) return "🥇 英語王 🥇";
+            if (points >= 10000) return "🥈 英語マスター 🥈";
+            if (points >= 8000) return "🥉 英語エキスパート 🥉";
+            if (points >= 6000) return "📚 英語上級者 📚";
+            if (points >= 4000) return "📖 英語中級者 📖";
+            if (points >= 2000) return "📝 英語初級者 📝";
+            return "🌱 英語ビギナー 🌱";
+        }
+
+        function restartGame() {
+            currentLevel = 1;
+            currentQuestion = 0;
+            score = 0;
+            correctAnswers = 0;
+            timeLeft = timeLimit;
+            
+            document.getElementById('game-over').classList.add('hidden');
+            document.getElementById('timer-setup').classList.remove('hidden');
+        }
+
+        // 音声合成の音声リストを読み込む
+        window.speechSynthesis.onvoiceschanged = function() {
+            const voices = speechSynthesis.getVoices();
+            console.log('利用可能な音声:', voices.filter(voice => voice.lang.includes('en')));
+        };
+
+        // ユーザーインタラクション後にAudioContextを有効化
+        document.addEventListener('click', function() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
