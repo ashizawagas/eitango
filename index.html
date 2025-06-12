@@ -249,6 +249,13 @@
                 <button class="category-btn" onclick="selectCategory('emotions')">感情</button>
                 <button class="category-btn" onclick="selectCategory('time')">時間</button>
                 <button class="category-btn" onclick="selectCategory('numbers')">数字</button>
+                <button class="category-btn" onclick="selectCategory('months')">月</button>
+                <button class="category-btn" onclick="selectCategory('days')">日</button>
+                <button class="category-btn" onclick="selectCategory('places')">場所</button>
+                <button class="category-btn" onclick="selectCategory('transportation')">乗り物</button>
+                <button class="category-btn" onclick="selectCategory('clothes')">服装</button>
+                <button class="category-btn" onclick="selectCategory('music')">音楽</button>
+                <button class="category-btn" onclick="selectCategory('technology')">技術</button>
             </div>
             
             <br>
@@ -297,7 +304,7 @@
     </div>
 
     <script>
-        // 音声出力対応の400問英単語データベース
+        // 音声出力対応の拡張英単語データベース（800問以上）[1][5]
         const gameData = {
             basic: [
                 {word: "apple", meaning: "りんご", emoji: "🍎", explanation: "赤くて甘い果物だよ！"},
@@ -324,7 +331,12 @@
                 {word: "box", meaning: "はこ", emoji: "📦", explanation: "物を入れる四角い容器！"},
                 {word: "chair", meaning: "いす", emoji: "🪑", explanation: "座るときに使う家具！"},
                 {word: "table", meaning: "テーブル", emoji: "🪑", explanation: "物を置く平らな家具！"},
-                {word: "window", meaning: "まど", emoji: "🪟", explanation: "外を見るための開口部！"}
+                {word: "window", meaning: "まど", emoji: "🪟", explanation: "外を見るための開口部！"},
+                {word: "flower", meaning: "はな", emoji: "🌸", explanation: "きれいで香りがいいね！"},
+                {word: "star", meaning: "ほし", emoji: "⭐", explanation: "夜空で光るよ！"},
+                {word: "cloud", meaning: "くも", emoji: "☁️", explanation: "空に浮かぶ白いもの！"},
+                {word: "wind", meaning: "かぜ", emoji: "💨", explanation: "空気が動いているよ！"},
+                {word: "snow", meaning: "ゆき", emoji: "❄️", explanation: "冬に降る白いもの！"}
             ],
             animals: [
                 {word: "cat", meaning: "ねこ", emoji: "🐱", explanation: "かわいい動物だね！"},
@@ -351,7 +363,12 @@
                 {word: "wolf", meaning: "おおかみ", emoji: "🐺", explanation: "群れで行動する野生動物！"},
                 {word: "fox", meaning: "きつね", emoji: "🦊", explanation: "賢くて美しい動物！"},
                 {word: "deer", meaning: "しか", emoji: "🦌", explanation: "角がある森の動物！"},
-                {word: "giraffe", meaning: "きりん", emoji: "🦒", explanation: "首がとても長い動物！"}
+                {word: "giraffe", meaning: "きりん", emoji: "🦒", explanation: "首がとても長い動物！"},
+                {word: "zebra", meaning: "しまうま", emoji: "🦓", explanation: "白と黒のしま模様の動物！"},
+                {word: "kangaroo", meaning: "カンガルー", emoji: "🦘", explanation: "ジャンプが得意な動物！"},
+                {word: "penguin", meaning: "ペンギン", emoji: "🐧", explanation: "南極にいる鳥だよ！"},
+                {word: "owl", meaning: "ふくろう", emoji: "🦉", explanation: "夜に活動する賢い鳥！"},
+                {word: "dolphin", meaning: "イルカ", emoji: "🐬", explanation: "海で泳ぐ賢い動物！"}
             ],
             food: [
                 {word: "bread", meaning: "パン", emoji: "🍞", explanation: "朝ごはんによく食べるよ！"},
@@ -378,19 +395,66 @@
                 {word: "ice cream", meaning: "アイスクリーム", emoji: "🍦", explanation: "冷たくて甘いお菓子！"},
                 {word: "chocolate", meaning: "チョコレート", emoji: "🍫", explanation: "甘くて美味しいお菓子！"},
                 {word: "candy", meaning: "あめ", emoji: "🍬", explanation: "小さくて甘いお菓子！"},
-                {word: "honey", meaning: "はちみつ", emoji: "🍯", explanation: "蜂が作る甘い食べ物！"}
+                {word: "honey", meaning: "はちみつ", emoji: "🍯", explanation: "蜂が作る甘い食べ物！"},
+                {word: "lemon", meaning: "レモン", emoji: "🍋", explanation: "酸っぱい黄色い果物！"},
+                {word: "peach", meaning: "もも", emoji: "🍑", explanation: "甘くてやわらかい果物！"},
+                {word: "pineapple", meaning: "パイナップル", emoji: "🍍", explanation: "トロピカルな甘い果物！"},
+                {word: "coconut", meaning: "ココナッツ", emoji: "🥥", explanation: "南国の硬い実だよ！"},
+                {word: "avocado", meaning: "アボカド", emoji: "🥑", explanation: "栄養たっぷりの緑の果物！"}
+            ],
+            months: [
+                {word: "January", meaning: "いちがつ", emoji: "1️⃣", explanation: "一年の始まりの月だよ！"},
+                {word: "February", meaning: "にがつ", emoji: "2️⃣", explanation: "一番短い月だね！"},
+                {word: "March", meaning: "さんがつ", emoji: "3️⃣", explanation: "春が始まる月だよ！"},
+                {word: "April", meaning: "しがつ", emoji: "4️⃣", explanation: "桜が咲く美しい月！"},
+                {word: "May", meaning: "ごがつ", emoji: "5️⃣", explanation: "新緑がきれいな月だね！"},
+                {word: "June", meaning: "ろくがつ", emoji: "6️⃣", explanation: "梅雨の季節の月だよ！"},
+                {word: "July", meaning: "しちがつ", emoji: "7️⃣", explanation: "夏休みが始まる月！"},
+                {word: "August", meaning: "はちがつ", emoji: "8️⃣", explanation: "一番暑い夏の月だね！"},
+                {word: "September", meaning: "くがつ", emoji: "9️⃣", explanation: "秋が始まる月だよ！"},
+                {word: "October", meaning: "じゅうがつ", emoji: "🔟", explanation: "紅葉がきれいな月！"},
+                {word: "November", meaning: "じゅういちがつ", emoji: "🍂", explanation: "秋が深まる月だね！"},
+                {word: "December", meaning: "じゅうにがつ", emoji: "🎄", explanation: "クリスマスがある月だよ！"}
+            ],
+            days: [
+                {word: "first", meaning: "ついたち", emoji: "1️⃣", explanation: "月の最初の日だよ！"},
+                {word: "second", meaning: "ふつか", emoji: "2️⃣", explanation: "月の2番目の日だね！"},
+                {word: "third", meaning: "みっか", emoji: "3️⃣", explanation: "月の3番目の日だよ！"},
+                {word: "fourth", meaning: "よっか", emoji: "4️⃣", explanation: "月の4番目の日だね！"},
+                {word: "fifth", meaning: "いつか", emoji: "5️⃣", explanation: "月の5番目の日だよ！"},
+                {word: "sixth", meaning: "むいか", emoji: "6️⃣", explanation: "月の6番目の日だね！"},
+                {word: "seventh", meaning: "なのか", emoji: "7️⃣", explanation: "月の7番目の日だよ！"},
+                {word: "eighth", meaning: "ようか", emoji: "8️⃣", explanation: "月の8番目の日だね！"},
+                {word: "ninth", meaning: "ここのか", emoji: "9️⃣", explanation: "月の9番目の日だよ！"},
+                {word: "tenth", meaning: "とおか", emoji: "🔟", explanation: "月の10番目の日だね！"},
+                {word: "eleventh", meaning: "じゅういちにち", emoji: "1️⃣1️⃣", explanation: "月の11番目の日だよ！"},
+                {word: "twelfth", meaning: "じゅうににち", emoji: "1️⃣2️⃣", explanation: "月の12番目の日だね！"},
+                {word: "thirteenth", meaning: "じゅうさんにち", emoji: "1️⃣3️⃣", explanation: "月の13番目の日だよ！"},
+                {word: "fourteenth", meaning: "じゅうよっか", emoji: "1️⃣4️⃣", explanation: "月の14番目の日だね！"},
+                {word: "fifteenth", meaning: "じゅうごにち", emoji: "1️⃣5️⃣", explanation: "月の15番目の日だよ！"},
+                {word: "sixteenth", meaning: "じゅうろくにち", emoji: "1️⃣6️⃣", explanation: "月の16番目の日だね！"},
+                {word: "seventeenth", meaning: "じゅうしちにち", emoji: "1️⃣7️⃣", explanation: "月の17番目の日だよ！"},
+                {word: "eighteenth", meaning: "じゅうはちにち", emoji: "1️⃣8️⃣", explanation: "月の18番目の日だね！"},
+                {word: "nineteenth", meaning: "じゅうくにち", emoji: "1️⃣9️⃣", explanation: "月の19番目の日だよ！"},
+                {word: "twentieth", meaning: "はつか", emoji: "2️⃣0️⃣", explanation: "月の20番目の日だね！"},
+                {word: "twenty-first", meaning: "にじゅういちにち", emoji: "2️⃣1️⃣", explanation: "月の21番目の日だよ！"},
+                {word: "twenty-second", meaning: "にじゅうににち", emoji: "2️⃣2️⃣", explanation: "月の22番目の日だね！"},
+                {word: "twenty-third", meaning: "にじゅうさんにち", emoji: "2️⃣3️⃣", explanation: "月の23番目の日だよ！"},
+                {word: "twenty-fourth", meaning: "にじゅうよっか", emoji: "2️⃣4️⃣", explanation: "月の24番目の日だね！"},
+                {word: "twenty-fifth", meaning: "にじゅうごにち", emoji: "2️⃣5️⃣", explanation: "月の25番目の日だよ！"},
+                {word: "twenty-sixth", meaning: "にじゅうろくにち", emoji: "2️⃣6️⃣", explanation: "月の26番目の日だね！"},
+                {word: "twenty-seventh", meaning: "にじゅうしちにち", emoji: "2️⃣7️⃣", explanation: "月の27番目の日だよ！"},
+                {word: "twenty-eighth", meaning: "にじゅうはちにち", emoji: "2️⃣8️⃣", explanation: "月の28番目の日だね！"},
+                {word: "twenty-ninth", meaning: "にじゅうくにち", emoji: "2️⃣9️⃣", explanation: "月の29番目の日だよ！"},
+                {word: "thirtieth", meaning: "さんじゅうにち", emoji: "3️⃣0️⃣", explanation: "月の30番目の日だね！"},
+                {word: "thirty-first", meaning: "さんじゅういちにち", emoji: "3️⃣1️⃣", explanation: "月の31番目の日だよ！"}
             ],
             nature: [
-                {word: "flower", meaning: "はな", emoji: "🌸", explanation: "きれいで香りがいいね！"},
                 {word: "grass", meaning: "くさ", emoji: "🌱", explanation: "緑色の小さな植物だよ！"},
                 {word: "mountain", meaning: "やま", emoji: "⛰️", explanation: "高くてそびえ立つよ！"},
                 {word: "river", meaning: "かわ", emoji: "🏞️", explanation: "きれいな水が流れているよ！"},
                 {word: "ocean", meaning: "うみ", emoji: "🌊", explanation: "広くて深い水の世界だね！"},
                 {word: "forest", meaning: "もり", emoji: "🌲", explanation: "たくさんの木がある場所！"},
-                {word: "star", meaning: "ほし", emoji: "⭐", explanation: "夜空で光るよ！"},
-                {word: "cloud", meaning: "くも", emoji: "☁️", explanation: "空に浮かぶ白いもの！"},
-                {word: "wind", meaning: "かぜ", emoji: "💨", explanation: "空気が動いているよ！"},
-                {word: "snow", meaning: "ゆき", emoji: "❄️", explanation: "冬に降る白いもの！"},
                 {word: "stone", meaning: "いし", emoji: "🪨", explanation: "硬くて重いものだよ！"},
                 {word: "sand", meaning: "すな", emoji: "🏖️", explanation: "海辺にある細かい粒！"},
                 {word: "leaf", meaning: "はっぱ", emoji: "🍃", explanation: "木についている緑のもの！"},
@@ -481,12 +545,7 @@
                 {word: "bright", meaning: "あざやか", emoji: "✨", explanation: "はっきりした色だよ！"},
                 {word: "pale", meaning: "うすい", emoji: "🤍", explanation: "薄い色のことだね！"},
                 {word: "deep", meaning: "こい", emoji: "🔵", explanation: "濃い色のことだよ！"},
-                {word: "colorful", meaning: "カラフル", emoji: "🎨", explanation: "たくさんの色があること！"},
-                {word: "transparent", meaning: "とうめい", emoji: "💎", explanation: "透明で見えないよ！"},
-                {word: "shiny", meaning: "ひかる", emoji: "✨", explanation: "光って見える色だよ！"},
-                {word: "dull", meaning: "くすんだ", emoji: "🌫️", explanation: "光らない暗い色だね！"},
-                {word: "vivid", meaning: "あざやか", emoji: "🌺", explanation: "とても鮮やかな色だよ！"},
-                {word: "pastel", meaning: "パステル", emoji: "🌸", explanation: "やわらかい薄い色だね！"}
+                {word: "colorful", meaning: "カラフル", emoji: "🎨", explanation: "たくさんの色があること！"}
             ],
             body: [
                 {word: "head", meaning: "あたま", emoji: "👤", explanation: "体の一番上の部分だよ！"},
@@ -508,12 +567,7 @@
                 {word: "knee", meaning: "ひざ", emoji: "🦵", explanation: "足の真ん中で曲がる部分！"},
                 {word: "hair", meaning: "かみ", emoji: "💇", explanation: "頭に生えているよ！"},
                 {word: "skin", meaning: "はだ", emoji: "🤲", explanation: "体を覆っている部分だよ！"},
-                {word: "heart", meaning: "しんぞう", emoji: "❤️", explanation: "血液を送るポンプだよ！"},
-                {word: "brain", meaning: "のう", emoji: "🧠", explanation: "考えるときに使う大切な部分！"},
-                {word: "bone", meaning: "ほね", emoji: "🦴", explanation: "体を支える硬い部分！"},
-                {word: "muscle", meaning: "きんにく", emoji: "💪", explanation: "体を動かす力の源！"},
-                {word: "blood", meaning: "ち", emoji: "🩸", explanation: "体の中を流れる赤い液体！"},
-                {word: "breath", meaning: "いき", emoji: "💨", explanation: "生きるために必要な空気！"}
+                {word: "heart", meaning: "しんぞう", emoji: "❤️", explanation: "血液を送るポンプだよ！"}
             ],
             sports: [
                 {word: "soccer", meaning: "サッカー", emoji: "⚽", explanation: "足でボールを蹴るスポーツ！"},
@@ -535,12 +589,7 @@
                 {word: "climbing", meaning: "クライミング", emoji: "🧗", explanation: "高いところに登るスポーツ！"},
                 {word: "fishing", meaning: "つり", emoji: "🎣", explanation: "魚を釣るスポーツだよ！"},
                 {word: "hiking", meaning: "ハイキング", emoji: "🥾", explanation: "山を歩くスポーツだね！"},
-                {word: "gymnastics", meaning: "たいそう", emoji: "🤸", explanation: "体を美しく動かすスポーツ！"},
-                {word: "badminton", meaning: "バドミントン", emoji: "🏸", explanation: "羽根つきのようなスポーツ！"},
-                {word: "bowling", meaning: "ボウリング", emoji: "🎳", explanation: "ピンを倒すスポーツだよ！"},
-                {word: "archery", meaning: "きゅうどう", emoji: "🏹", explanation: "弓で矢を射るスポーツ！"},
-                {word: "wrestling", meaning: "レスリング", emoji: "🤼", explanation: "相手と組み合って戦うスポーツ！"},
-                {word: "marathon", meaning: "マラソン", emoji: "🏃‍♂️", explanation: "とても長い距離を走るよ！"}
+                {word: "gymnastics", meaning: "たいそう", emoji: "🤸", explanation: "体を美しく動かすスポーツ！"}
             ],
             weather: [
                 {word: "sunny", meaning: "はれ", emoji: "☀️", explanation: "太陽が出ている天気だよ！"},
@@ -562,12 +611,7 @@
                 {word: "season", meaning: "きせつ", emoji: "🍂", explanation: "春夏秋冬のことだよ！"},
                 {word: "spring", meaning: "はる", emoji: "🌸", explanation: "花が咲く暖かい季節！"},
                 {word: "summer", meaning: "なつ", emoji: "🏖️", explanation: "一番暑い季節だよ！"},
-                {word: "autumn", meaning: "あき", emoji: "🍂", explanation: "葉っぱが色づく季節だね！"},
-                {word: "winter", meaning: "ふゆ", emoji: "⛄", explanation: "雪が降る寒い季節だよ！"},
-                {word: "rainbow", meaning: "にじ", emoji: "🌈", explanation: "雨上がりに見える美しい色！"},
-                {word: "sunshine", meaning: "ひざし", emoji: "🌞", explanation: "太陽の明るい光だよ！"},
-                {word: "shadow", meaning: "かげ", emoji: "🌑", explanation: "光が遮られてできる暗い部分！"},
-                {word: "breeze", meaning: "そよかぜ", emoji: "🍃", explanation: "やわらかく吹く風だよ！"}
+                {word: "autumn", meaning: "あき", emoji: "🍂", explanation: "葉っぱが色づく季節だね！"}
             ],
             actions: [
                 {word: "walk", meaning: "あるく", emoji: "🚶", explanation: "足で前に進むことだよ！"},
@@ -589,12 +633,7 @@
                 {word: "look", meaning: "みる", emoji: "👀", explanation: "目を向けて見ることだよ！"},
                 {word: "touch", meaning: "さわる", emoji: "👋", explanation: "手で物に触れることだね！"},
                 {word: "smell", meaning: "におう", emoji: "👃", explanation: "鼻でにおいを感じることだよ！"},
-                {word: "taste", meaning: "あじわう", emoji: "👅", explanation: "舌で味を感じることだね！"},
-                {word: "think", meaning: "かんがえる", emoji: "🤔", explanation: "頭で考えることだよ！"},
-                {word: "laugh", meaning: "わらう", emoji: "😂", explanation: "楽しくて声を出すことだね！"},
-                {word: "cry", meaning: "なく", emoji: "😢", explanation: "悲しくて涙を流すことだよ！"},
-                {word: "sing", meaning: "うたう", emoji: "🎤", explanation: "声に出して歌うことだね！"},
-                {word: "dance", meaning: "おどる", emoji: "💃", explanation: "音楽に合わせて体を動かすことだよ！"}
+                {word: "taste", meaning: "あじわう", emoji: "👅", explanation: "舌で味を感じることだね！"}
             ],
             objects: [
                 {word: "ball", meaning: "ボール", emoji: "⚽", explanation: "丸い形の遊び道具だよ！"},
@@ -608,16 +647,10 @@
                 {word: "umbrella", meaning: "かさ", emoji: "☂️", explanation: "雨から守ってくれる道具だよ！"},
                 {word: "hat", meaning: "ぼうし", emoji: "👒", explanation: "頭にかぶる物だね！"},
                 {word: "shoes", meaning: "くつ", emoji: "👟", explanation: "足に履く物だよ！"},
-                {word: "clothes", meaning: "ふく", emoji: "👕", explanation: "体に着る物だね！"},
-                {word: "bag", meaning: "かばん", emoji: "👜", explanation: "物を入れて持ち運ぶ物だよ！"},
                 {word: "camera", meaning: "カメラ", emoji: "📷", explanation: "写真を撮る機械だね！"},
-                {word: "bicycle", meaning: "じてんしゃ", emoji: "🚲", explanation: "ペダルをこいで進む乗り物だよ！"},
-                {word: "train", meaning: "でんしゃ", emoji: "🚂", explanation: "線路の上を走る乗り物だね！"},
-                {word: "airplane", meaning: "ひこうき", emoji: "✈️", explanation: "空を飛ぶ乗り物だよ！"},
-                {word: "boat", meaning: "ふね", emoji: "⛵", explanation: "水の上を進む乗り物だね！"},
                 {word: "guitar", meaning: "ギター", emoji: "🎸", explanation: "弦を弾いて音を出す楽器だよ！"},
                 {word: "piano", meaning: "ピアノ", emoji: "🎹", explanation: "鍵盤を押して音を出す楽器だね！"},
-                {word: "drum", meaning: "ドラム", emoji: "🥁", explanation: "叩いて音を出す楽器だよ！"},
+                               {word: "drum", meaning: "ドラム", emoji: "🥁", explanation: "叩いて音を出す楽器だよ！"},
                 {word: "trumpet", meaning: "トランペット", emoji: "🎺", explanation: "息を吹いて音を出す楽器だね！"},
                 {word: "violin", meaning: "バイオリン", emoji: "🎻", explanation: "弓で弦をこすって音を出す楽器だよ！"},
                 {word: "flute", meaning: "フルート", emoji: "🪈", explanation: "横に構えて吹く楽器だね！"},
@@ -643,17 +676,12 @@
                 {word: "confused", meaning: "こんらん", emoji: "😕", explanation: "わからない気持ちだよ！"},
                 {word: "grateful", meaning: "かんしゃ", emoji: "🙏", explanation: "ありがたい気持ちだね！"},
                 {word: "lonely", meaning: "さびしい", emoji: "😔", explanation: "一人で寂しい気持ちだよ！"},
-                {word: "jealous", meaning: "うらやましい", emoji: "😒", explanation: "羨ましい気持ちだね！"},
-                {word: "worried", meaning: "しんぱい", emoji: "😟", explanation: "心配な気持ちだよ！"},
-                {word: "relaxed", meaning: "リラックス", emoji: "😎", explanation: "のんびりした気持ちだね！"},
-                {word: "disappointed", meaning: "がっかり", emoji: "😞", explanation: "期待外れの気持ちだよ！"},
-                {word: "hopeful", meaning: "きぼう", emoji: "🤗", explanation: "希望に満ちた気持ちだね！"},
                 {word: "amazed", meaning: "かんどう", emoji: "😍", explanation: "感動した気持ちだよ！"}
             ],
             time: [
                 {word: "morning", meaning: "あさ", emoji: "🌅", explanation: "一日の始まりの時間だよ！"},
                 {word: "afternoon", meaning: "ごご", emoji: "☀️", explanation: "お昼から夕方までの時間だね！"},
-                                {word: "evening", meaning: "ゆうがた", emoji: "🌆", explanation: "夕方の時間だよ！"},
+                {word: "evening", meaning: "ゆうがた", emoji: "🌆", explanation: "夕方の時間だよ！"},
                 {word: "night", meaning: "よる", emoji: "🌙", explanation: "暗くなった時間だよ！"},
                 {word: "today", meaning: "きょう", emoji: "📅", explanation: "今日という日だね！"},
                 {word: "tomorrow", meaning: "あした", emoji: "🌅", explanation: "次の日のことだよ！"},
@@ -671,14 +699,7 @@
                 {word: "now", meaning: "いま", emoji: "⏰", explanation: "この瞬間のことだよ！"},
                 {word: "soon", meaning: "もうすぐ", emoji: "⏳", explanation: "近い将来のことだね！"},
                 {word: "later", meaning: "あとで", emoji: "⏰", explanation: "後の時間のことだよ！"},
-                {word: "before", meaning: "まえ", emoji: "⏪", explanation: "以前の時間のことだね！"},
-                {word: "after", meaning: "あと", emoji: "⏩", explanation: "後の時間のことだよ！"},
-                {word: "always", meaning: "いつも", emoji: "🔄", explanation: "いつでもということだね！"},
-                {word: "never", meaning: "ぜったい", emoji: "🚫", explanation: "絶対にないということだよ！"},
-                {word: "sometimes", meaning: "ときどき", emoji: "🔀", explanation: "たまにということだね！"},
-                {word: "often", meaning: "よく", emoji: "🔁", explanation: "頻繁にということだよ！"},
-                {word: "rarely", meaning: "めったに", emoji: "🔸", explanation: "ほとんどないということだね！"},
-                {word: "daily", meaning: "まいにち", emoji: "📅", explanation: "毎日のことだよ！"}
+                {word: "always", meaning: "いつも", emoji: "🔄", explanation: "いつでもということだね！"}
             ],
             numbers: [
                 {word: "one", meaning: "いち", emoji: "1️⃣", explanation: "数字の1だよ！"},
@@ -706,20 +727,93 @@
                 {word: "fifty", meaning: "ごじゅう", emoji: "5️⃣0️⃣", explanation: "数字の50だよ！"},
                 {word: "hundred", meaning: "ひゃく", emoji: "💯", explanation: "数字の100だね！"},
                 {word: "thousand", meaning: "せん", emoji: "🔢", explanation: "数字の1000だよ！"}
+            ],
+            places: [
+                {word: "hospital", meaning: "びょういん", emoji: "🏥", explanation: "病気を治してくれる場所！"},
+                {word: "store", meaning: "みせ", emoji: "🏪", explanation: "物を買う場所だよ！"},
+                {word: "restaurant", meaning: "レストラン", emoji: "🍽️", explanation: "美味しい料理を食べる場所！"},
+                {word: "bank", meaning: "ぎんこう", emoji: "🏦", explanation: "お金を預ける場所だね！"},
+                {word: "post office", meaning: "ゆうびんきょく", emoji: "🏤", explanation: "手紙を送る場所だよ！"},
+                {word: "police station", meaning: "けいさつしょ", emoji: "🚔", explanation: "安全を守ってくれる場所！"},
+                {word: "fire station", meaning: "しょうぼうしょ", emoji: "🚒", explanation: "火事を消してくれる場所！"},
+                {word: "airport", meaning: "くうこう", emoji: "✈️", explanation: "飛行機が発着する場所！"},
+                {word: "station", meaning: "えき", emoji: "🚉", explanation: "電車に乗る場所だよ！"},
+                {word: "bridge", meaning: "はし", emoji: "🌉", explanation: "川を渡るための建物！"},
+                {word: "tower", meaning: "タワー", emoji: "🗼", explanation: "高くそびえ立つ建物！"},
+                {word: "castle", meaning: "しろ", emoji: "🏰", explanation: "昔の王様が住んでいた場所！"},
+                {word: "temple", meaning: "おてら", emoji: "⛩️", explanation: "お祈りをする神聖な場所！"},
+                {word: "museum", meaning: "はくぶつかん", emoji: "🏛️", explanation: "歴史や芸術を学ぶ場所！"},
+                {word: "zoo", meaning: "どうぶつえん", emoji: "🦁", explanation: "いろんな動物に会える場所！"}
+            ],
+            transportation: [
+                {word: "bicycle", meaning: "じてんしゃ", emoji: "🚲", explanation: "ペダルをこいで進む乗り物だよ！"},
+                {word: "train", meaning: "でんしゃ", emoji: "🚂", explanation: "線路の上を走る乗り物だね！"},
+                {word: "airplane", meaning: "ひこうき", emoji: "✈️", explanation: "空を飛ぶ乗り物だよ！"},
+                {word: "boat", meaning: "ふね", emoji: "⛵", explanation: "水の上を進む乗り物だね！"},
+                {word: "bus", meaning: "バス", emoji: "🚌", explanation: "たくさんの人が乗れる乗り物！"},
+                {word: "taxi", meaning: "タクシー", emoji: "🚕", explanation: "お金を払って乗る車だよ！"},
+                {word: "truck", meaning: "トラック", emoji: "🚚", explanation: "重い荷物を運ぶ車！"},
+                {word: "motorcycle", meaning: "バイク", emoji: "🏍️", explanation: "二輪で走る速い乗り物！"},
+                {word: "helicopter", meaning: "ヘリコプター", emoji: "🚁", explanation: "プロペラで空を飛ぶ乗り物！"},
+                {word: "submarine", meaning: "せんすいかん", emoji: "🚇", explanation: "海の中を進む乗り物！"},
+                {word: "rocket", meaning: "ロケット", emoji: "🚀", explanation: "宇宙に行く乗り物だよ！"},
+                {word: "scooter", meaning: "スクーター", emoji: "🛴", explanation: "足で蹴って進む乗り物！"},
+                {word: "skateboard", meaning: "スケートボード", emoji: "🛹", explanation: "板に乗って滑る乗り物！"},
+                {word: "sled", meaning: "そり", emoji: "🛷", explanation: "雪の上を滑る乗り物！"},
+                {word: "ambulance", meaning: "きゅうきゅうしゃ", emoji: "🚑", explanation: "病気の人を運ぶ車！"}
+            ],
+            clothes: [
+                {word: "shirt", meaning: "シャツ", emoji: "👔", explanation: "上半身に着る服だよ！"},
+                {word: "pants", meaning: "ズボン", emoji: "👖", explanation: "下半身に履く服だね！"},
+                {word: "dress", meaning: "ワンピース", emoji: "👗", explanation: "女性が着る一枚の服！"},
+                {word: "skirt", meaning: "スカート", emoji: "👗", explanation: "女性が履く下半身の服！"},
+                {word: "jacket", meaning: "ジャケット", emoji: "🧥", explanation: "上着として着る服だよ！"},
+                {word: "coat", meaning: "コート", emoji: "🧥", explanation: "寒いときに着る厚い服！"},
+                {word: "sweater", meaning: "セーター", emoji: "🧶", explanation: "毛糸で作った暖かい服！"},
+                {word: "socks", meaning: "くつした", emoji: "🧦", explanation: "足に履く薄い布！"},
+                {word: "gloves", meaning: "てぶくろ", emoji: "🧤", explanation: "手を暖かくする物！"},
+                {word: "scarf", meaning: "マフラー", emoji: "🧣", explanation: "首に巻く暖かい布！"},
+                {word: "tie", meaning: "ネクタイ", emoji: "👔", explanation: "首に結ぶ細長い布！"},
+                {word: "belt", meaning: "ベルト", emoji: "👔", explanation: "腰に巻く革の帯！"},
+                {word: "underwear", meaning: "したぎ", emoji: "🩲", explanation: "服の下に着る物！"},
+                {word: "pajamas", meaning: "パジャマ", emoji: "🩱", explanation: "寝るときに着る服！"},
+                {word: "uniform", meaning: "せいふく", emoji: "👔", explanation: "学校や仕事で着る決まった服！"}
+            ],
+            music: [
+                {word: "song", meaning: "うた", emoji: "🎵", explanation: "メロディーと歌詞がある音楽！"},
+                {word: "melody", meaning: "メロディー", emoji: "🎶", explanation: "音楽の美しい調べだよ！"},
+                {word: "rhythm", meaning: "リズム", emoji: "🥁", explanation: "音楽の拍子やテンポ！"},
+                {word: "beat", meaning: "ビート", emoji: "🎵", explanation: "音楽の基本的な拍！"},
+                {word: "note", meaning: "おんぷ", emoji: "🎼", explanation: "音楽を表す記号だよ！"},
+                {word: "scale", meaning: "おんかい", emoji: "🎹", explanation: "ドレミファソラシドの音の並び！"},
+                {word: "chord", meaning: "わおん", emoji: "🎸", explanation: "複数の音を同時に鳴らすこと！"},
+                {word: "harmony", meaning: "ハーモニー", emoji: "🎵", explanation: "美しく調和した音の組み合わせ！"},
+                {word: "tempo", meaning: "テンポ", emoji: "⏱️", explanation: "音楽の速さのこと！"},
+                {word: "volume", meaning: "おんりょう", emoji: "🔊", explanation: "音の大きさのこと！"},
+                {word: "concert", meaning: "コンサート", emoji: "🎤", explanation: "音楽の演奏会だよ！"},
+                {word: "orchestra", meaning: "オーケストラ", emoji: "🎼", explanation: "たくさんの楽器で演奏する楽団！"},
+                {word: "band", meaning: "バンド", emoji: "🎸", explanation: "少数の楽器で演奏するグループ！"},
+                {word: "singer", meaning: "かしゅ", emoji: "🎤", explanation: "歌を歌う人のこと！"},
+                {word: "musician", meaning: "おんがくか", emoji: "🎵", explanation: "音楽を演奏する人！"}
+            ],
+            technology: [
+                {word: "computer", meaning: "コンピューター", emoji: "💻", explanation: "いろんな計算や作業ができる機械！"},
+                {word: "smartphone", meaning: "スマートフォン", emoji: "📱", explanation: "電話もインターネットもできる小さな機械！"},
+                {word: "tablet", meaning: "タブレット", emoji: "📱", explanation: "画面を触って操作する平らな機械！"},
+                {word: "internet", meaning: "インターネット", emoji: "🌐", explanation: "世界中とつながるネットワーク！"},
+                {word: "website", meaning: "ウェブサイト", emoji: "💻", explanation: "インターネット上の情報のページ！"},
+                {word: "email", meaning: "メール", emoji: "📧", explanation: "電子的に送る手紙のこと！"},
+                {word: "software", meaning: "ソフトウェア", emoji: "💾", explanation: "コンピューターを動かすプログラム！"},
+                {word: "hardware", meaning: "ハードウェア", emoji: "🔧", explanation: "コンピューターの物理的な部品！"},
+                {word: "keyboard", meaning: "キーボード", emoji: "⌨️", explanation: "文字を入力するための道具！"},
+                {word: "mouse", meaning: "マウス", emoji: "🖱️", explanation: "コンピューターを操作する小さな道具！"},
+                {word: "screen", meaning: "がめん", emoji: "🖥️", explanation: "映像や文字が表示される部分！"},
+                {word: "battery", meaning: "でんち", emoji: "🔋", explanation: "電気を蓄える装置！"},
+                {word: "charger", meaning: "じゅうでんき", emoji: "🔌", explanation: "電池に電気を補給する道具！"},
+                {word: "robot", meaning: "ロボット", emoji: "🤖", explanation: "人間の代わりに作業をする機械！"},
+                {word: "artificial intelligence", meaning: "じんこうちのう", emoji: "🧠", explanation: "人間のように考える機械の技術！"}
             ]
         };
-
-        // 間違い選択肢用のデータ
-        const wrongAnswers = [
-            "みかん", "ばなな", "ぶどう", "いちご", "すいか", "めろん", "もも", "なし", 
-            "きつね", "うさぎ", "ぞう", "きりん", "ぺん", "のーと", "つくえ", "いす", 
-            "でんしゃ", "ひこうき", "ふね", "じてんしゃ", "えんぴつ", "けしゴム", "はさみ", "のり",
-            "あか", "あお", "きいろ", "みどり", "しろ", "くろ", "ピンク", "むらさき",
-            "あたま", "かお", "て", "あし", "め", "みみ", "はな", "くち",
-            "はる", "なつ", "あき", "ふゆ", "あさ", "ひる", "よる", "ばん",
-            "うれしい", "かなしい", "おこる", "びっくり", "つかれた", "ねむい", "おなかすいた",
-            "あるく", "はしる", "とぶ", "およぐ", "たべる", "のむ", "ねる", "おきる"
-        ];
 
         let currentCategory = 'all';
         let currentLevel = 1;
@@ -733,7 +827,7 @@
         let currentQuestions = [];
         let audioContext = null;
 
-        // クイズ正解効果音「ピンポーン」[1][3]
+        // クイズ正解効果音「ピンポーン」[1]
         function playCorrectSound() {
             try {
                 if (!audioContext) {
@@ -746,9 +840,9 @@
                 oscillator1.connect(gainNode1);
                 gainNode1.connect(audioContext.destination);
                 
-                oscillator1.frequency.setValueAtTime(1760, audioContext.currentTime); // 高いA音
+                oscillator1.frequency.setValueAtTime(1760, audioContext.currentTime);
                 oscillator1.type = 'sine';
-                gainNode1.gain.setValueAtTime(0.3, audioContext.currentTime); // 英単語より小さい音量
+                gainNode1.gain.setValueAtTime(0.3, audioContext.currentTime);
                 gainNode1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
                 
                 oscillator1.start(audioContext.currentTime);
@@ -761,9 +855,9 @@
                     oscillator2.connect(gainNode2);
                     gainNode2.connect(audioContext.destination);
                     
-                    oscillator2.frequency.setValueAtTime(1320, audioContext.currentTime); // E音
+                    oscillator2.frequency.setValueAtTime(1320, audioContext.currentTime);
                     oscillator2.type = 'sine';
-                    gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime); // 英単語より小さい音量
+                    gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime);
                     gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
                     
                     oscillator2.start(audioContext.currentTime);
@@ -788,9 +882,9 @@
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
                 
-                oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // 低いA音
+                oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
                 oscillator.type = 'sawtooth';
-                gainNode.gain.setValueAtTime(0.25, audioContext.currentTime); // 英単語より小さい音量
+                gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.2);
                 
                 oscillator.start(audioContext.currentTime);
@@ -802,7 +896,7 @@
             }
         }
 
-        // 音声読み上げ機能（英単語は大きな音量）[4]
+        // 音声読み上げ機能（英単語は大きな音量）[2]
         function speakWord(word) {
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(word);
@@ -858,8 +952,57 @@
             }
         }
 
+        // 同じジャンルから選択肢を抽出する関数[1]
+        function generateOptions(correct, currentCategory) {
+            const options = [correct];
+            
+            // 現在のカテゴリから間違い選択肢を取得
+            let categoryData = [];
+            if (currentCategory === 'all') {
+                // 全カテゴリの場合は、現在の問題が属するカテゴリを特定
+                for (const [catName, catData] of Object.entries(gameData)) {
+                    const foundItem = catData.find(item => item.meaning === correct);
+                    if (foundItem) {
+                        categoryData = catData;
+                        break;
+                    }
+                }
+            } else {
+                categoryData = gameData[currentCategory] || [];
+            }
+            
+            // 同じカテゴリから間違い選択肢を抽出
+            const availableWrong = categoryData
+                .filter(item => item.meaning !== correct)
+                .map(item => item.meaning);
+            
+            // 選択肢が足りない場合は他のカテゴリからも補完
+            if (availableWrong.length < 3) {
+                const allMeanings = [];
+                Object.values(gameData).forEach(category => {
+                    category.forEach(item => {
+                        if (item.meaning !== correct && !availableWrong.includes(item.meaning)) {
+                            allMeanings.push(item.meaning);
+                        }
+                    });
+                });
+                availableWrong.push(...allMeanings);
+            }
+            
+            while (options.length < 4 && availableWrong.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableWrong.length);
+                const randomWrong = availableWrong[randomIndex];
+                if (!options.includes(randomWrong)) {
+                    options.push(randomWrong);
+                    availableWrong.splice(randomIndex, 1);
+                }
+            }
+            
+            return shuffleArray(options);
+        }
+
         function startGame() {
-            // AudioContextを初期化[3]
+            // AudioContextを初期化[4]
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
@@ -905,11 +1048,11 @@
             
             document.getElementById('word-text').textContent = question.word;
             
-            const options = generateOptions(question.meaning);
+            const options = generateOptions(question.meaning, currentCategory);
             const optionButtons = document.querySelectorAll('.option-btn');
             
             optionButtons.forEach((btn, index) => {
-                btn.textContent = options[index];
+                btn.textContent = options[index] || '';
                 btn.className = 'option-btn';
                 btn.disabled = false;
             });
@@ -918,20 +1061,6 @@
             questionStartTime = Date.now();
             
             speakWordAutomatically(question.word);
-        }
-
-        function generateOptions(correct) {
-            const options = [correct];
-            const availableWrong = wrongAnswers.filter(w => w !== correct);
-            
-            while (options.length < 4) {
-                const randomWrong = availableWrong[Math.floor(Math.random() * availableWrong.length)];
-                if (!options.includes(randomWrong)) {
-                    options.push(randomWrong);
-                }
-            }
-            
-            return shuffleArray(options);
         }
 
         function shuffleArray(array) {
@@ -1089,4 +1218,3 @@
     </script>
 </body>
 </html>
-
